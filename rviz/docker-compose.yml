@@ -1,0 +1,37 @@
+version: '2'
+services:
+  rviz:
+    image: 141.69.58.19:5000/iki/pcl_grabber:master
+    environment:
+      ROS_IP: $ROS_IP
+      ROS_MASTER_URI: $ROS_MASTER_URI
+      DISPLAY: :0
+      QT_X11_NO_MITSHM: '1'
+      PATH: /usr/local/nvidia/bin:${PATH}
+      LD_LIBRARY_PATH: /usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
+    stdin_open: true
+    network_mode: host
+    volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - $HOME/catkin_ws:/root/catkin_ws
+    - /tmp/.X11-unix:/tmp/.X11-unix
+    - $HOME/.Xauthority:/root/.Xauthority
+    - nvidia_driver_384.111:/usr/local/nvidia:ro
+    privileged: true
+    # devices:
+    # - /dev/nvidia0
+    # - /dev/nvidiactl
+    # - /dev/nvidia-uvm
+    tty: true
+    # command: roslaunch marvin_moveit_config moveit_rviz.launch
+    # command: rosrun rviz rviz
+    command: tail -f /dev/null
+    labels:
+      io.rancher.container.pull_image: "never"
+      io.rancher.container.start_once: "true"
+      io.rancher.scheduler.affinity:host_label: "hostname=ros-kate"
+
+version: '2'
+volumes:
+  nvidia_driver_384.111:
+    external: true

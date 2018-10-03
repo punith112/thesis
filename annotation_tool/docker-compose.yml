@@ -1,0 +1,38 @@
+version: '3.4'
+services:
+  pcl-annotator:
+    build:
+      context: . # Specifies, in which folder the Dockerfile is located
+
+    image: 141.69.58.19:5000/iki/pcl/annotator:master
+
+    environment:
+        DISPLAY: :0
+        QT_X11_NO_MITSHM: '1'
+        # PATH: /usr/local/nvidia/bin:${PATH}
+        LD_LIBRARY_PATH: /usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
+    # stdin_open: true
+    network_mode: host
+
+    volumes:
+        # - /etc/localtime:/etc/localtime:ro
+        - nvidia_driver_384.111:/usr/local/nvidia:ro
+        - /tmp/.X11-unix:/tmp/.X11-unix
+        - $HOME/.Xauthority:/root/.Xauthority
+        - /home/iki/catkin_ws/src:/root/catkin_ws/src
+
+    # devices:
+    # - /dev/nvidia0
+    # - /dev/nvidiactl
+    # - /dev/nvidia-uvm
+
+    # tty: true
+
+    command: /bin/bash -c "~/catkin_ws/devel/lib/annotation_tool/annotation_tool"
+    # command: tail -f /dev/null
+
+
+version: '3.4'
+volumes:
+  nvidia_driver_384.111:
+    external: true

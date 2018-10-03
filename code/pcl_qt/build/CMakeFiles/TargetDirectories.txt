@@ -1,0 +1,4 @@
+/home/iki/catkin_ws/src/thesis/code/pcl_qt/build/CMakeFiles/edit_cache.dir
+/home/iki/catkin_ws/src/thesis/code/pcl_qt/build/CMakeFiles/rebuild_cache.dir
+/home/iki/catkin_ws/src/thesis/code/pcl_qt/build/CMakeFiles/pcl_visualizer.dir
+/home/iki/catkin_ws/src/thesis/code/pcl_qt/build/CMakeFiles/pcl_visualizer_automoc.dir

@@ -1,0 +1,49 @@
+version: '3.4'
+
+services:
+  xtion:
+    image: 141.69.58.19:5000/iki/pcl_grabber:master
+    # environment:
+    #   ROS_IP: $ROS_IP
+    #   ROS_MASTER_URI: $ROS_MASTER_URI
+    stdin_open: true
+    network_mode: host
+    restart: "unless-stopped"
+    volumes:
+    - $HOME/catkin_ws:/root/catkin_ws
+    devices:
+    - /dev:/dev
+    tty: true
+    privileged: true
+    # command:  /bin/bash -c "sleep 20; roslaunch marvin_bringup xtion.launch"
+    command: tail -f /dev/null
+    # labels:
+    #   io.rancher.container.pull_image: never
+    #   io.rancher.scheduler.affinity:host_label: hostname=ros-kate
+
+
+    # pcl-grabber:
+    #     build:
+    #         context: .
+    #
+    #     image: 141.69.58.19:5000/iki/pcl/grabber:master
+    #
+    #     container_name: pcl_grabber
+    #
+    #     environment:
+    #         DISPLAY: 0
+    #         QT_X11_NO_MITSHM: '1'
+    #
+    #     stdin_open: true
+    #     network_mode: host
+    #
+    #     volumes:
+    #         - /tmp/.QT_X11-unix:/tmp/.X11-unix
+    #         - $HOME/.Xauthority:/root/.Xauthority
+    #
+    #     devices:
+    #         - /dev/bus/usb:/dev/bus/usb
+    #
+    #     tty: true
+    #
+    #     command: tail -f /dev/null

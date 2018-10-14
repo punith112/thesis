@@ -38,7 +38,6 @@ for file in os.listdir(directory):
 
 # main_list.append(get_obj_pose('Akshaya_Table_131023_Aft_seg.xml'))
 
-
 with open('mouse_features.csv', mode = 'w') as mouse_file:
     csv_writer = csv.writer(mouse_file, delimiter=',')
 

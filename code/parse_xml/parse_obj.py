@@ -18,10 +18,14 @@ def get_obj_pose(filename):
             for child in elem:
                 main_dict[obj_name][child.tag] = child.text
 
+
         if elem.tag == "dimensions":
             # import ipdb; ipdb.set_trace()
             for child in elem:
                 main_dict[obj_name][child.tag] = child.text
+                if abs(4.600571e+35 - float(child.text)) < 1:
+                    print(filename)
+                    import ipdb; ipdb.set_trace()
 
     return main_dict
 
@@ -44,9 +48,16 @@ with open('mouse_features.csv', mode = 'w') as mouse_file:
     csv_writer.writerow(['x', 'y', 'z'])
 
     for i in range(len(main_list)):
+
         try:
+            if abs(2.3002855e+35 - round(float(main_list[i]['Mouse']['z']) + float(main_list[i]['Mouse']['height'])/2, 2)) < 1:
+                print("Yes")
+                print(round(float(main_list[i]['Mouse']['z']) + float(main_list[i]['Mouse']['height'])/2, 2))
+                print(i)
+                print(float(main_list[i]['Mouse']['z']), float(main_list[i]['Mouse']['height']))
             csv_writer.writerow([round(float(main_list[i]['Mouse']['x']) + float(main_list[i]['Mouse']['length'])/2, 2),
                                 round(float(main_list[i]['Mouse']['y']) + float(main_list[i]['Mouse']['width'])/2, 2),
                                 round(float(main_list[i]['Mouse']['z']) + float(main_list[i]['Mouse']['height'])/2, 2)])
+
         except KeyError:
             continue

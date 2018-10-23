@@ -1,0 +1,14 @@
+\contentsline {section}{\numberline {1}Motivation}{2}
+\contentsline {section}{\numberline {2}Modeling Spatial Relations of Objects in a Scene}{2}
+\contentsline {section}{\numberline {3}Thesis}{3}
+\contentsline {subsection}{\numberline {3.1}Dataset of Point Clouds}{3}
+\contentsline {subsection}{\numberline {3.2}Manual Annotation of the Dataset}{4}
+\contentsline {subsection}{\numberline {3.3}Extraction of Features}{4}
+\contentsline {paragraph}{Single Object Features ($f_{o_i}$)}{4}
+\contentsline {paragraph}{Object Pair Features ($f_{o_i, o_j}$)}{5}
+\contentsline {subsection}{\numberline {3.4}Fitting a Model}{5}
+\contentsline {paragraph}{Object class Modeling}{6}
+\contentsline {paragraph}{Learning object pair relationships}{6}
+\contentsline {subsection}{\numberline {3.5}Computation of Scene Similarity Score}{6}
+\contentsline {section}{\numberline {4}Timeline}{8}
+\contentsline {section}{\numberline {5}References}{9}

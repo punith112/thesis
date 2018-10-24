@@ -19,9 +19,11 @@ data = data.reshape(-1, 1)
 # Plotting a normalised histogram of the data (bins are 10 by default)
 count, bins, patches = plt.hist(data, alpha=0.6, density=True, color='b')
 
+# Fitting a 2 component Gaussian Mixture
 clf = mixture.GaussianMixture(n_components=2, covariance_type='full')
 clf.fit(data)
 
+# Plotting the Guassian Mixture curve
 xmin, xmax = plt.xlim()
 x = np.linspace(xmin, xmax, 100)
 x = x.reshape(-1, 1)

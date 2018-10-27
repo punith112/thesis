@@ -1,3 +1,7 @@
+# An example showing how to fit 1D Guassian mixtures to data
+# and also to select the optimal number of components in the mixtures
+# using AIC and BIC model selection criteria
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
@@ -19,13 +23,23 @@ data = data.reshape(-1, 1)
 # Plotting a normalised histogram of the data (bins are 10 by default)
 count, bins, patches = plt.hist(data, alpha=0.6, density=True, color='b')
 
-# Fitting a 2 component Gaussian Mixture
-clf = mixture.GaussianMixture(n_components=2, covariance_type='full')
-clf.fit(data)
+models = []
+
+for i in range(10):
+    models.append(mixture.GaussianMixture(n_components=i+1, covariance_type='full'))
+    models[i].fit(data)
+
+best_aic, best_model_aic = min((models[i].aic(data), models[i]) for i in range(len(models)))
+best_bic, best_model_bic = min((models[i].bic(data), models[i]) for i in range(len(models)))
+
+
+# # Fitting a 2 component Gaussian Mixture
+# clf = mixture.GaussianMixture(n_components=2, covariance_type='full')
+# clf.fit(data)
 
 # Plotting the Guassian Mixture curve
 xmin, xmax = plt.xlim()
 x = np.linspace(xmin, xmax, 100)
 x = x.reshape(-1, 1)
-pdf = np.exp(clf.score_samples(x))
+pdf = np.exp(best_model_aic.score_samples(x))
 plt.plot(x, pdf, 'r', linewidth=1)

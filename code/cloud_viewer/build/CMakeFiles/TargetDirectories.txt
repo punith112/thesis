@@ -1,3 +1,0 @@
-/home/iki/catkin_ws/src/thesis/code/build/CMakeFiles/rebuild_cache.dir
-/home/iki/catkin_ws/src/thesis/code/build/CMakeFiles/edit_cache.dir
-/home/iki/catkin_ws/src/thesis/code/build/CMakeFiles/cloud_viewer.dir

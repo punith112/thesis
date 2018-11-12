@@ -32,13 +32,15 @@ def get_obj_pose(filename):
     return main_dict
 
 
-directory = os.fsencode("../../kth-3d-total/xml-annotated")
+kth_db_path = "../kth-3d-total/xml-annotated/"
+
+directory = os.fsencode(kth_db_path)
 
 main_list = []
 
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
-    filename = "../../kth-3d-total/xml-annotated/" + filename
+    filename = kth_db_path + filename
     # print(filename)
     main_list.append(get_obj_pose(os.path.abspath(filename)))
 

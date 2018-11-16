@@ -3,4 +3,6 @@ marvin/
 pcl_grabber/
 roscore/
 rviz/
-
+pcl_files/
+temp/
+test/

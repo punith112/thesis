@@ -1,0 +1,13 @@
+#!/bin/bash
+
+DATASET_DIR=~/catkin_ws/src/thesis/iki_dataset
+
+for value in $DATASET_DIR/*.ply
+do
+  # input=$(basename $value)
+  output="${value%.*}"
+  output=${output}.pcd
+  # echo $output
+  ply2pcd $value $output
+  echo ===================
+done

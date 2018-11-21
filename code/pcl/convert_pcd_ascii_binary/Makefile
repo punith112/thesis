@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/iki/catkin_ws/src/thesis/code/pcl/pcd_ascii_to_binary
+CMAKE_SOURCE_DIR = /home/iki/catkin_ws/src/thesis/code/pcl/convert_pcd_ascii_binary
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/iki/catkin_ws/src/thesis/code/pcl/pcd_ascii_to_binary
+CMAKE_BINARY_DIR = /home/iki/catkin_ws/src/thesis/code/pcl/convert_pcd_ascii_binary
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/iki/catkin_ws/src/thesis/code/pcl/pcd_ascii_to_binary/CMakeFiles /home/iki/catkin_ws/src/thesis/code/pcl/pcd_ascii_to_binary/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/iki/catkin_ws/src/thesis/code/pcl/convert_pcd_ascii_binary/CMakeFiles /home/iki/catkin_ws/src/thesis/code/pcl/convert_pcd_ascii_binary/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/iki/catkin_ws/src/thesis/code/pcl/pcd_ascii_to_binary/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/iki/catkin_ws/src/thesis/code/pcl/convert_pcd_ascii_binary/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

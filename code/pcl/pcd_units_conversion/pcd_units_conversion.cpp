@@ -15,7 +15,7 @@ main (int argc, char** argv)
   }
   std::cout << "Loaded "
             << cloud->width * cloud->height
-            << " data points from test_pcd.pcd with the following fields: "
+            << " data points from " << argv[1]
             << std::endl;
 
   pcl::PointCloud<pcl::PointXYZRGBA> new_cloud;
@@ -34,7 +34,7 @@ main (int argc, char** argv)
   }
 
   pcl::io::savePCDFileASCII (argv[2], new_cloud);
-  std::cerr << "Saved " << new_cloud.points.size () << " data points to corrected_pcd.pcd." << std::endl;
+  std::cerr << "Saved " << new_cloud.points.size () << " scaled data points to " << argv[2] << std::endl;
 
   // for (size_t i = 0; i < new_cloud.points.size (); ++i)
   //   std::cerr << "    " << new_cloud.points[i].x << " " << new_cloud.points[i].y << " " << new_cloud.points[i].z << std::endl;

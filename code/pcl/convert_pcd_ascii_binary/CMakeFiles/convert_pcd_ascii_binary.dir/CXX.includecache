@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/iki/catkin_ws/src/thesis/code/pcl/pcd_ascii_to_binary/convert_pcd_ascii_binary.cpp
+/home/iki/catkin_ws/src/thesis/code/pcl/convert_pcd_ascii_binary/convert_pcd_ascii_binary.cpp
 iostream
 -
 pcl/common/io.h

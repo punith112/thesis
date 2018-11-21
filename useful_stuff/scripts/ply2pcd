@@ -1,0 +1,22 @@
+#!/bin/bash
+
+PCL_CODE_DIR=~/catkin_ws/src/thesis/code/pcl
+
+if [ "$#" -ne 2 ]
+then
+  echo Usage: ply2pcd ply_file pcd_file
+  exit 1
+fi
+
+if [ ! -e $1 ]
+then
+  echo PLY file doesn\'t exist!
+  exit 2
+fi
+
+$PCL_CODE_DIR/ply2pcd/ply2pcd -f ascii -c $1 $2
+echo -------------------
+$PCL_CODE_DIR/pcd_units_conversion/pcd_units_conversion $2 $2
+echo -------------------
+$PCL_CODE_DIR/convert_pcd_ascii_binary/convert_pcd_ascii_binary $2 $2 1
+echo Converted PLY to PCD!

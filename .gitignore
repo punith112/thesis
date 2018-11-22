@@ -1,3 +1,4 @@
+build/
 code/pcl/ply2pcd
 iki_dataset/
 kth-3d-total/

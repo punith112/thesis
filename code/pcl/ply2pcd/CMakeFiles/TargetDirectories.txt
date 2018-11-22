@@ -1,3 +1,0 @@
-/home/iki/catkin_ws/src/thesis/code/pcl/ply2pcd/CMakeFiles/edit_cache.dir
-/home/iki/catkin_ws/src/thesis/code/pcl/ply2pcd/CMakeFiles/rebuild_cache.dir
-/home/iki/catkin_ws/src/thesis/code/pcl/ply2pcd/CMakeFiles/ply2pcd.dir

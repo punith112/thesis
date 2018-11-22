@@ -1,3 +1,0 @@
-/home/iki/catkin_ws/src/thesis/code/pcl/convert_pcd_ascii_binary/CMakeFiles/edit_cache.dir
-/home/iki/catkin_ws/src/thesis/code/pcl/convert_pcd_ascii_binary/CMakeFiles/rebuild_cache.dir
-/home/iki/catkin_ws/src/thesis/code/pcl/convert_pcd_ascii_binary/CMakeFiles/convert_pcd_ascii_binary.dir

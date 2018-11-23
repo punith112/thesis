@@ -21,6 +21,8 @@ services:
         - $HOME/.Xauthority:/root/.Xauthority
         - /home/iki/catkin_ws/src:/root/catkin_ws/src
 
+    working_dir: /root/catkin_ws/src/thesis/iki_dataset
+
     # devices:
     # - /dev/nvidia0
     # - /dev/nvidiactl

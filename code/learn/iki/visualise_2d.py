@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import mixture
 
-# Method that fits an n-component 2D GMM to a couple of columns in a
+# Function that fits an n-component 2D GMM to a couple of columns in a
 # dataframe and returns the required data for plotting the GMM
 def generate_gmm(df, cols, n_components):
 

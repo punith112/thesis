@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import mixture
 
-# Method that fits an n-component GMM to a column in a data dataframe
+# Function that fits an n-component GMM to a column in a data dataframe
 # and returns the column in an np array format and the scores and also
 # a set of points for plotting th GMM
-def generate_gmm(dataframe, col, n_components):
-    data = main_df[col]
+def generate_gmm(df, col, n_components):
+    data = df[col]
     data = data.values.reshape(-1, 1)
 
     clf = mixture.GaussianMixture(n_components=n_components, covariance_type='full')

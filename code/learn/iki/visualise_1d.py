@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import mixture
 
-# Function that fits an n-component GMM to a column in a data dataframe
+# Function that fits an n-component GMM to a column in a dataframe
 # and returns the column in an np array format and the scores and also
 # a set of points for plotting th GMM
 def generate_gmm(df, col, n_components):

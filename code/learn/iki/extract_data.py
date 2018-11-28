@@ -10,7 +10,7 @@ def get_obj_pose(filename):
     root = tree.getroot()
 
     main_dict = {}
-    main_dict['file'] = filename[47:]
+    main_dict['file'] = filename[47:-8]
 
     for elem in root[3].iter():
         if elem.tag == "name":

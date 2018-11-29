@@ -103,7 +103,7 @@ gmm_df = pd.DataFrame()
 for obj in objects_in_scene:
     feature_set = extract_single_obj_features(main_df, obj, features)
     filename = obj + '_' + 'features'
-    main_df.to_csv(filename, sep = '\t')
-    
+    feature_set.to_csv(filename, sep = '\t')
+
     param_series = fit_gmm(obj, feature_set)
     gmm_df[obj] = param_series

@@ -272,5 +272,8 @@ for pair in itertools.combinations(objects_in_scene, 2):
     obj1 = pair[0]
     obj2 = pair[1]
     feature_set = extract_obj_pair_features(obj1, obj2, df_dict[obj1], df_dict[obj2], features)
+    filename = obj1 + '_' + obj2 + '_' + 'features'
+    feature_set.to_csv(filename, sep = '\t')
+
     param_series = fit_gmm(obj1, obj2, feature_set)
     gmm_df[obj1 + '_' + obj2] = param_series

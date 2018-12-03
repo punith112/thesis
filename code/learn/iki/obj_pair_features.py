@@ -277,3 +277,5 @@ for pair in itertools.combinations(objects_in_scene, 2):
 
     param_series = fit_gmm(obj1, obj2, feature_set)
     gmm_df[obj1 + '_' + obj2] = param_series
+
+gmm_df.to_csv('obj_pair_features', sep='\t')

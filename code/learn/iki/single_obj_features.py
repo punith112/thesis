@@ -74,10 +74,12 @@ def fit_gmm(obj, obj_feature_set):
     else:
         print("Object: {}. Warning! GMM hasn't converged!".format(obj))
 
-    param_series['n-components'] = clf.n_components
+
+    param_series['n_components'] = clf.n_components
     param_series['weights'] = clf.weights_
     param_series['means'] = clf.means_
     param_series['covars'] = clf.covariances_
+
 
     return param_series
 
@@ -106,6 +108,20 @@ for obj in objects_in_scene:
     feature_set.to_csv(filename, sep='\t')
 
     param_series = fit_gmm(obj, feature_set)
-    gmm_df[obj] = param_series
 
+    gmm_df[obj] = param_series
+    # print(type(gmm_df[obj]['covars']))
+
+gmm_df = gmm_df.transpose()
 gmm_df.to_csv('single_obj_features', sep='\t')
+# gmm_df = gmm_df.astype({"n-components": int, "weights": np.ndarray})
+
+gmm_dict = {}
+
+for obj in objects_in_scene:
+    gmm_dict[obj] = {}
+    for column in gmm_df:
+        gmm_dict[obj][column] = gmm_df[column][obj]
+
+with open("single_obj_features.txt", "wb") as myFile:
+    pickle.dump(gmm_dict, myFile)

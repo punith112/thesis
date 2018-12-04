@@ -222,7 +222,7 @@ def fit_gmm(obj1, obj2, obj_pair_feature_set):
     else:
         print("Object: {}, {}. Warning! GMM hasn't converged!".format(obj1, obj2))
 
-    param_series['n-components'] = clf.n_components
+    param_series['n_components'] = clf.n_components
     param_series['weights'] = clf.weights_
     param_series['means'] = clf.means_
     param_series['covars'] = clf.covariances_

@@ -6,44 +6,46 @@ import pickle
 import itertools
 from collections import OrderedDict
 
-class ObjectPairFeatures:
+# Constants
+MAX_GMM_COMPONENTS=2
+
+class ObjectPairWrapper:
     """
     A Class implementation for extracting object pair features
     from the object attributes database
     """
 
-    def __init__(self, extracted_data_file):
+    def __init__(self, objects_in_scene):
 
-        self.extracted_data_file = extracted_data_file
+        self.objects_in_scene = objects_in_scene
+
         self.features = OrderedDict()
-
-        self.objects_in_scene = []
         self.object_dfs = {}
         self.object_pair_dfs = {}
         self.object_pair_feature_gmms = {}
 
-    def get_objects_in_scene(self):
-        """
-        Get the objects from all scenes in the training data
-
-        Returns
-        -------
-        objects_in_scene: List
-        List of objects in the training data
-        """
-
-        objects_in_scene = []
-
-        with open(self.extracted_data_file, "rb") as myFile:
-            temp_list = pickle.load(myFile)
-
-        for i in range(len(temp_list)):
-            objects_in_scene = list(set().union(objects_in_scene, temp_list[i].keys()))
-
-        objects_in_scene.remove('file')
-        objects_in_scene.sort()
-
-        return objects_in_scene
+    # def get_objects_in_scene(self):
+    #     """
+    #     Get the objects from all scenes in the training data
+    #
+    #     Returns
+    #     -------
+    #     objects_in_scene: List
+    #     List of objects in the training data
+    #     """
+    #
+    #     objects_in_scene = []
+    #
+    #     with open(self.extracted_data_file, "rb") as myFile:
+    #         temp_list = pickle.load(myFile)
+    #
+    #     for i in range(len(temp_list)):
+    #         objects_in_scene = list(set().union(objects_in_scene, temp_list[i].keys()))
+    #
+    #     objects_in_scene.remove('file')
+    #     objects_in_scene.sort()
+    #
+    #     return objects_in_scene
 
     def get_object_dfs(self, objects_in_scene):
         """
@@ -272,7 +274,7 @@ class ObjectPairFeatures:
         models = []
         param_series = pd.Series()
 
-        for i in range(10):
+        for i in range(MAX_GMM_COMPONENTS):
             models.append(mixture.GaussianMixture(n_components=i+1, covariance_type='full'))
             models[i].fit(obj_pair_df)
 
@@ -305,8 +307,8 @@ class ObjectPairFeatures:
         in the object_pair_feature_gmms dictionary.
         """
 
-        # Get the names of the objects in the training data
-        self.objects_in_scene = self.get_objects_in_scene()
+        # Sort the names of the objects in the training data
+        self.objects_in_scene.sort()
         self.object_dfs = self.get_object_dfs(self.objects_in_scene)
 
         # Ordered Dictionary that maps the name of the feature to its

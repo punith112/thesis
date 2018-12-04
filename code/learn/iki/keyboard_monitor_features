@@ -1,0 +1,4 @@
+	keyboard_monitor_x_diff	keyboard_monitor_y_diff	keyboard_monitor_z_diff	keyboard_monitor_length_ratio	keyboard_monitor_width_ratio	keyboard_monitor_height_ratio
+table_1	0	-4.0	-6	1.0	0.0	1.01
+table_2	0	-8.0	-12	1.0	0.0	1.01
+table_3	0	-12.0	-18	1.0	0.0	1.01

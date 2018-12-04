@@ -1,0 +1,4 @@
+	keyboard_x	keyboard_y	keyboard_z	keyboard_length	keyboard_width	keyboard_height
+table_1	1	-2.0	-3	10	0	10.1
+table_2	2	-4.0	-6	20	0	20.2
+table_3	3	-6.0	-9	30	0	30.3

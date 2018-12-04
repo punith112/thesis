@@ -1,0 +1,4 @@
+	monitor_height	monitor_length	monitor_width	monitor_x	monitor_y	monitor_z	keyboard_height	keyboard_length	keyboard_width	keyboard_x	keyboard_y	keyboard_z
+table_1	10.0	10	10	1	2	3	10.1	10	0	1	-2.0	-3
+table_2	20.0	20	20	2	4	6	20.2	20	0	2	-4.0	-6
+table_3	30.0	30	30	3	6	9	30.3	30	0	3	-6.0	-9

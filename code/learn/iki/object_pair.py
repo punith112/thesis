@@ -7,6 +7,10 @@ import itertools
 from collections import OrderedDict
 
 class ObjectPairFeatures:
+    """
+    A Class implementation for extracting object pair features
+    from the object attributes database
+    """
 
     def __init__(self, extracted_data_file):
 
@@ -21,6 +25,11 @@ class ObjectPairFeatures:
     def get_objects_in_scene(self):
         """
         Get the objects from all scenes in the training data
+
+        Returns
+        -------
+        objects_in_scene: List
+        List of objects in the training data
         """
 
         objects_in_scene = []
@@ -37,6 +46,21 @@ class ObjectPairFeatures:
         return objects_in_scene
 
     def get_object_dfs(self, objects_in_scene):
+        """
+        Reads the object attribute DataFrames stored while computing
+        single object features
+
+        Parameters
+        ----------
+        objects_in_scene: List
+        List of objects in the training data
+
+        Returns
+        -------
+        object_dfs: dictionary
+        A dictionary with object names as keys and corresponding
+        attribute DataFrames as values
+        """
 
         object_dfs = {}
 
@@ -272,9 +296,21 @@ class ObjectPairFeatures:
 
 
     def get_gmm_params(self):
+        """
+        Computes the feature vectors for each object pair as per the
+        feature computation methods specified inside the method and
+        segregates them into separate Pandas DataFrames.
 
+        Fits GMMs to these segregated DataFrames and stores the results
+        in the object_pair_feature_gmms dictionary.
+        """
+
+        # Get the names of the objects in the training data
         self.objects_in_scene = self.get_objects_in_scene()
         self.object_dfs = self.get_object_dfs(self.objects_in_scene)
+
+        # Ordered Dictionary that maps the name of the feature to its
+        # computation method
         self.features['x_diff'] = self.compute_x_diff
         self.features['y_diff'] = self.compute_y_diff
         self.features['z_diff'] = self.compute_z_diff
@@ -282,14 +318,19 @@ class ObjectPairFeatures:
         self.features['width_ratio'] = self.compute_width_ratio
         self.features['height_ratio'] = self.compute_height_ratio
 
+        # Iterating over each object pair
         for pair in itertools.combinations(self.objects_in_scene, 2):
             obj1 = pair[0]
             obj2 = pair[1]
             object_pair = obj1 + '_' + obj2
+
+            # Extract feature set for the object pair from all scenes and
+            # write to file
             self.object_pair_dfs[object_pair] = self.extract_object_pair_features(obj1, obj2, self.features)
             filename = obj1 + '_' + obj2 + '_' + 'features'
             self.object_pair_dfs[object_pair].to_csv(filename, sep = '\t')
 
+            # Fit GMMs for feature set of each object pair and store them in a dictionary
             gmm, param_series = self.fit_gmm(obj1, obj2, self.object_pair_dfs[object_pair])
             self.object_pair_feature_gmms[object_pair] = {}
             self.object_pair_feature_gmms[object_pair]['gmm'] = gmm

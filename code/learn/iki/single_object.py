@@ -8,11 +8,12 @@ from collections import OrderedDict
 
 class SingleObjectFeatures:
     """
-    A class implementation for extracting single object features
+    A Class implementation for extracting single object features
     from the object attributes database
     """
 
     def __init__(self, extracted_data_file, obj_attributes_file, features):
+
         self.extracted_data_file = extracted_data_file
         self.obj_attributes_df = pd.read_csv(obj_attributes_file, sep = '\t', index_col=0)
         self.features = features
@@ -24,6 +25,11 @@ class SingleObjectFeatures:
     def get_objects_in_scene(self):
         """
         Get the objects from all scenes in the training data
+
+        Returns
+        -------
+        objects_in_scene: List
+        List of objects in the training data
         """
 
         objects_in_scene = []
@@ -125,20 +131,19 @@ class SingleObjectFeatures:
         in the single_obj_feature_gmms dictionary.
         """
 
+        # Get the names of the objects in the training data
         self.objects_in_scene = self.get_objects_in_scene()
 
         for obj in self.objects_in_scene:
+            # Extract features of each object from attributes databse
             self.single_obj_dfs[obj] = self.get_single_obj_features(obj)
             filename = obj + '_' + 'features'
             self.single_obj_dfs[obj].to_csv(filename, sep='\t')
 
+            # Fit GMMs for feature set of each object and store them in a dictionary
             gmm, param_series = self.fit_gmm(obj, self.single_obj_dfs[obj])
             self.single_obj_feature_gmms[obj] = {}
             self.single_obj_feature_gmms[obj]['gmm'] = gmm
             self.single_obj_feature_gmms[obj]['params'] = param_series
 
         return self.single_obj_feature_gmms
-
-
-features = ['x', 'y', 'z', 'length', 'width', 'height']
-test = SingleObjectFeatures("extracted_data.txt", "database", features)

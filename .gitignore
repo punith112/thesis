@@ -1,5 +1,7 @@
 build/
 code/pcl/ply2pcd
+data/
+dump/
 iki_dataset/
 kth-3d-total/
 marvin/

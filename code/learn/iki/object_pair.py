@@ -7,7 +7,7 @@ import itertools
 from collections import OrderedDict
 
 # Constants
-MAX_GMM_COMPONENTS=2
+MAX_GMM_COMPONENTS=10
 
 class ObjectPairWrapper:
     """
@@ -15,46 +15,24 @@ class ObjectPairWrapper:
     from the object attributes database
     """
 
-    def __init__(self, objects_in_scene):
+    def __init__(self, objects_in_scenes):
 
-        self.objects_in_scene = objects_in_scene
+        self.objects_in_scenes = objects_in_scenes
 
         self.features = OrderedDict()
         self.object_dfs = {}
+        self.object_pair_frequencies = {}
         self.object_pair_dfs = {}
         self.object_pair_feature_gmms = {}
 
-    # def get_objects_in_scene(self):
-    #     """
-    #     Get the objects from all scenes in the training data
-    #
-    #     Returns
-    #     -------
-    #     objects_in_scene: List
-    #     List of objects in the training data
-    #     """
-    #
-    #     objects_in_scene = []
-    #
-    #     with open(self.extracted_data_file, "rb") as myFile:
-    #         temp_list = pickle.load(myFile)
-    #
-    #     for i in range(len(temp_list)):
-    #         objects_in_scene = list(set().union(objects_in_scene, temp_list[i].keys()))
-    #
-    #     objects_in_scene.remove('file')
-    #     objects_in_scene.sort()
-    #
-    #     return objects_in_scene
-
-    def get_object_dfs(self, objects_in_scene):
+    def get_object_dfs(self, objects_in_scenes):
         """
         Reads the object attribute DataFrames stored while computing
         single object features
 
         Parameters
         ----------
-        objects_in_scene: List
+        objects_in_scenes: List
         List of objects in the training data
 
         Returns
@@ -66,7 +44,7 @@ class ObjectPairWrapper:
 
         object_dfs = {}
 
-        for obj in objects_in_scene:
+        for obj in objects_in_scenes:
             filename = obj + '_' + 'features'
             object_dfs[obj] = pd.read_csv(filename, sep='\t', index_col=0)
 
@@ -308,8 +286,8 @@ class ObjectPairWrapper:
         """
 
         # Sort the names of the objects in the training data
-        self.objects_in_scene.sort()
-        self.object_dfs = self.get_object_dfs(self.objects_in_scene)
+        self.objects_in_scenes.sort()
+        self.object_dfs = self.get_object_dfs(self.objects_in_scenes)
 
         # Ordered Dictionary that maps the name of the feature to its
         # computation method
@@ -321,7 +299,7 @@ class ObjectPairWrapper:
         self.features['height_ratio'] = self.compute_height_ratio
 
         # Iterating over each object pair
-        for pair in itertools.combinations(self.objects_in_scene, 2):
+        for pair in itertools.combinations(self.objects_in_scenes, 2):
             obj1 = pair[0]
             obj2 = pair[1]
             object_pair = obj1 + '_' + obj2
@@ -339,3 +317,22 @@ class ObjectPairWrapper:
             self.object_pair_feature_gmms[object_pair]['params'] = param_series
 
         return self.object_pair_feature_gmms
+
+    def get_object_pair_frequencies(self, scene_list):
+
+        # Iterating over each object pair
+        for pair in itertools.combinations(self.objects_in_scenes, 2):
+            obj1 = pair[0]
+            obj2 = pair[1]
+            self.object_pair_frequencies[obj1 + '_' + obj2] = 0
+
+        for scene in scene_list:
+            for pair in itertools.combinations(scene.keys(), 2):
+                temp_list = sorted(pair)
+                temp_obj1 = temp_list[0]
+                temp_obj2 = temp_list[1]
+
+                if temp_obj1 in self.objects_in_scenes and temp_obj2 in self.objects_in_scenes:
+                    self.object_pair_frequencies[temp_obj1 + '_' + temp_obj2] = self.object_pair_frequencies[temp_obj1 + '_' + temp_obj2] + 1
+
+        return self.object_pair_frequencies

@@ -7,16 +7,21 @@ import itertools
 from collections import OrderedDict
 
 # Constants
-MAX_GMM_COMPONENTS=2
+MAX_GMM_COMPONENTS=10
 
 class SingleObjectWrapper:
 
-    def __init__(self, objects_in_scene, object_attributes_file, features):
+    def __init__(self, objects_in_scenes, object_attributes_file, features):
+        """
+        A Class implementation for extracting the single object features
+        from the object attributes database
+        """
 
-        self.objects_in_scene = objects_in_scene
+        self.objects_in_scenes = objects_in_scenes
         self.object_attributes_df = pd.read_csv(object_attributes_file, sep = '\t', index_col=0)
         self.features = features
 
+        self.single_object_frequencies = {}
         self.single_object_dfs = {}
         self.single_obj_feature_gmms = {}
 
@@ -107,9 +112,9 @@ class SingleObjectWrapper:
         """
 
         # Sort the names of the objects in the training data
-        self.objects_in_scene.sort()
+        self.objects_in_scenes.sort()
 
-        for obj in self.objects_in_scene:
+        for obj in self.objects_in_scenes:
             # Extract features of each object from attributes databse
             self.single_object_dfs[obj] = self.get_single_obj_features(obj)
             filename = obj + '_' + 'features'
@@ -123,55 +128,14 @@ class SingleObjectWrapper:
 
         return self.single_obj_feature_gmms
 
-if __name__ == '__main__':
-    test = SingleObjectFeatures()
+    def get_single_object_frequencies(self, scene_list):
 
-# print(222)
-# # Extract all objects present in the scenes
-# with open("extracted_data.txt", "rb") as myFile:
-#     main_list = pickle.load(myFile)
-#
-# objects_in_scene = []
-#
-# for i in range(len(main_list)):
-#     objects_in_scene = list(set().union(objects_in_scene, main_list[i].keys()))
-#
-# objects_in_scene.remove('file')
-#
-# features = ['x', 'y', 'z', 'length', 'width', 'height']
-#
-# # Load the database, specify the features to be extracted
-# main_df = pd.read_csv('database', sep = '\t', index_col=0)
-#
-# test = SingleObjectFeatures(objects_in_scene, main_df, features)
+        for obj in self.objects_in_scenes:
+            self.single_object_frequencies[obj] = 0
 
+        for scene in scene_list:
+            for key in scene.keys():
+                if key in self.objects_in_scenes:
+                    self.single_object_frequencies[key] = self.single_object_frequencies[key] + 1
 
-
-
-# indices = ['table_1', 'table_2', 'table_3']
-#
-# monitor_x = pd.Series([1, 2, 3], index=indices)
-# monitor_y = pd.Series([2, 4, 6], index=indices)
-# monitor_z = pd.Series([3, 6, 9], index=indices)
-# monitor_length = pd.Series([10, 20, 30], index=indices)
-# monitor_width = pd.Series([10, 20, 30], index=indices)
-# monitor_height = pd.Series([10.0, 20.0, 30.0], index=indices)
-#
-# monitor_df = pd.DataFrame({'monitor_x': monitor_x, 'monitor_y': monitor_y, 'monitor_z': monitor_z,
-#                             'monitor_length': monitor_length, 'monitor_width': monitor_width, 'monitor_height': monitor_height})
-#
-# keyboard_x = pd.Series([1, 2, 3], index=indices)
-# keyboard_y = pd.Series([-2.0, -4.0, -6.0], index=indices)
-# keyboard_z = pd.Series([-3, -6, -9], index=indices)
-# keyboard_length = pd.Series([10, 20, 30], index=indices)
-# keyboard_width = pd.Series([0, 0, 0], index=indices)
-# keyboard_height = pd.Series([10.1, 20.2, 30.3], index=indices)
-#
-# keyboard_df = pd.DataFrame({'keyboard_x': keyboard_x, 'keyboard_y': keyboard_y, 'keyboard_z': keyboard_z,
-#                             'keyboard_length': keyboard_length, 'keyboard_width': keyboard_width, 'keyboard_height': keyboard_height})
-#
-# objects_in_scene = ['monitor', 'keyboard']
-# main_df = pd.concat([monitor_df, keyboard_df], axis=1)
-# features = ['x', 'y', 'z']
-#
-# test = SingleObjectFeatures(objects_in_scene, main_df, features)
+        return self.single_object_frequencies

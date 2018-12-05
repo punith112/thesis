@@ -1,21 +1,37 @@
+import pickle
+import os
+import xml.etree.ElementTree as ET
+import pandas as pd
 from single_object import SingleObjectWrapper
 from object_pair import ObjectPairWrapper
-import pickle
+from extract_data import DataExtractor
 
-with open("extracted_data.txt", "rb") as myFile:
-    main_list = pickle.load(myFile)
+training_data_path = "/home/iki/catkin_ws/src/thesis/iki_dataset/training_data/"
+training_dict_dump_file_name = "data/training_data.dict"
+training_df_dump_file_name = "data/training_data.df"
 
-objects_in_scene = []
+test_data_path = "/home/iki/catkin_ws/src/thesis/iki_dataset/test_data/"
+test_dict_dump_file_name = "data/test_data.dict"
+test_df_dump_file_name = "data/test_data.df"
 
-for i in range(len(main_list)):
-    objects_in_scene = list(set().union(objects_in_scene, main_list[i].keys()))
+attributes = ['x', 'y', 'z', 'roll', 'pitch', 'yaw', 'length', 'width', 'height']
 
-objects_in_scene.remove('file')
+training_data_extractor = DataExtractor(training_data_path, attributes, training_dict_dump_file_name, training_df_dump_file_name)
+training_scenes_list = training_data_extractor.generate_scenes_list()
+training_objects_in_scenes = training_data_extractor.get_objects_in_scenes()
+training_scenes_df = training_data_extractor.generate_scenes_df()
+
+test_data_extractor = DataExtractor(test_data_path, attributes, test_dict_dump_file_name, test_df_dump_file_name)
+test_scenes_list = test_data_extractor.generate_scenes_list()
+test_objects_in_scenes = test_data_extractor.get_objects_in_scenes()
+test_scenes_df = test_data_extractor.generate_scenes_df()
 
 features = ['x', 'y', 'z', 'length', 'width', 'height']
 
-single_object_wrapper = SingleObjectWrapper(objects_in_scene, "database", features)
+single_object_wrapper = SingleObjectWrapper(training_objects_in_scenes, training_df_dump_file_name, features)
 single_object_gmms = single_object_wrapper.get_gmm_params()
+single_object_frequencies = single_object_wrapper.get_single_object_frequencies(training_scenes_list)
 
-object_pair_wrapper = ObjectPairWrapper(objects_in_scene)
+object_pair_wrapper = ObjectPairWrapper(training_objects_in_scenes)
 object_pair_gmms = object_pair_wrapper.get_gmm_params()
+object_pair_frequencies = object_pair_wrapper.get_object_pair_frequencies(training_scenes_list)

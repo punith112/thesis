@@ -30,9 +30,7 @@ from object_pair import ObjectPairWrapper
 
 objects_in_scene = ['monitor', 'keyboard']
 
-features = ['x', 'y', 'z', 'length', 'width', 'height']
-
-single_object_wrapper = SingleObjectWrapper(objects_in_scene, "test_database", features)
+single_object_wrapper = SingleObjectWrapper(objects_in_scene, "data/test_database")
 single_object_gmms = single_object_wrapper.get_gmm_params()
 
 object_pair_wrapper = ObjectPairWrapper(objects_in_scene)

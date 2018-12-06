@@ -8,6 +8,7 @@ from collections import OrderedDict
 
 # Constants
 MAX_GMM_COMPONENTS=10
+DATA_DUMP_FOLDER='data/'
 
 class ObjectPairWrapper:
     """
@@ -46,13 +47,13 @@ class ObjectPairWrapper:
 
         for obj in objects_in_scenes:
             filename = obj + '_' + 'features'
-            object_dfs[obj] = pd.read_csv(filename, sep='\t', index_col=0)
+            object_dfs[obj] = pd.read_csv('data/' + filename, sep='\t', index_col=0)
 
         return object_dfs
 
-    def compute_x_diff(self, obj1, obj2):
+    def compute_centroid_x_diff(self, obj1, obj2):
         """
-        Computes difference between the x co-ordinate attribute of
+        Computes difference between the x co-ordinates of the centroids of
         two objects in all scenes.
 
         Parameters
@@ -66,18 +67,18 @@ class ObjectPairWrapper:
         Returns
         -------
         diff_series: Pandas Series
-        A Pandas Series containing the x differential between the two objects
-        from all scenes.
+        A Pandas Series containing the x differential between the centroids of
+        two objects from all scenes.
         """
 
-        x_diff_series = pd.Series()
-        x_diff_series = self.object_dfs[obj1][obj1 + '_x'] - self.object_dfs[obj2][obj2 + '_x']
+        centroid_x_diff_series = pd.Series()
+        centroid_x_diff_series = self.object_dfs[obj1][obj1 + '_centroid_x'] - self.object_dfs[obj2][obj2 + '_centroid_x']
 
-        return x_diff_series
+        return centroid_x_diff_series
 
-    def compute_y_diff(self, obj1, obj2):
+    def compute_centroid_y_diff(self, obj1, obj2):
         """
-        Computes difference between the y co-ordinate attribute of
+        Computes difference between the y co-ordinates of the centroids of
         two objects in all scenes.
 
         Parameters
@@ -91,18 +92,18 @@ class ObjectPairWrapper:
         Returns
         -------
         diff_series: Pandas Series
-        A Pandas Series containing the y differential between the two objects
-        from all scenes.
+        A Pandas Series containing the y differential between the centroids of
+        two objects from all scenes.
         """
 
-        y_diff_series = pd.Series()
-        y_diff_series = self.object_dfs[obj1][obj1 + '_y'] - self.object_dfs[obj2][obj2 + '_y']
+        centroid_y_diff_series = pd.Series()
+        centroid_y_diff_series = self.object_dfs[obj1][obj1 + '_centroid_y'] - self.object_dfs[obj2][obj2 + '_centroid_y']
 
-        return y_diff_series
+        return centroid_y_diff_series
 
-    def compute_z_diff(self, obj1, obj2):
+    def compute_centroid_z_diff(self, obj1, obj2):
         """
-        Computes difference between the z co-ordinate attribute of
+        Computes difference between the z co-ordinates of the centroids of
         two objects in all scenes.
 
         Parameters
@@ -116,14 +117,14 @@ class ObjectPairWrapper:
         Returns
         -------
         diff_series: Pandas Series
-        A Pandas Series containing the z differential between the two objects
-        from all scenes.
+        A Pandas Series containing the z differential between the centroids of
+        two objects from all scenes.
         """
 
-        z_diff_series = pd.Series()
-        z_diff_series = self.object_dfs[obj1][obj1 + '_z'] - self.object_dfs[obj2][obj2 + '_z']
+        centroid_z_diff_series = pd.Series()
+        centroid_z_diff_series = self.object_dfs[obj1][obj1 + '_centroid_z'] - self.object_dfs[obj2][obj2 + '_centroid_z']
 
-        return z_diff_series
+        return centroid_z_diff_series
 
     def compute_length_ratio(self, obj1, obj2):
         """
@@ -207,9 +208,6 @@ class ObjectPairWrapper:
         obj1, obj2: Strings
         Object names.
 
-        obj1_df, obj2_df: Pandas DataFrame
-        DataFrame containing all attributes of the objects in all scenes.
-
         features: OrderedDict
         An ordered dictionary that has the feature names as the keys
         and the feature computation functions as the values.
@@ -279,10 +277,16 @@ class ObjectPairWrapper:
         """
         Computes the feature vectors for each object pair as per the
         feature computation methods specified inside the method and
-        segregates them into separate Pandas DataFrames.
+        segregates them into separate Pandas DataFrames for each object pair.
 
         Fits GMMs to these segregated DataFrames and stores the results
         in the object_pair_feature_gmms dictionary.
+
+        Returns
+        -------
+        self.object_pair_feature_gmms: Dict
+        Dictionary that has object pair names as keys and the corresponding
+        Gaussian Mixture Models and their parameters as values.
         """
 
         # Sort the names of the objects in the training data
@@ -291,9 +295,9 @@ class ObjectPairWrapper:
 
         # Ordered Dictionary that maps the name of the feature to its
         # computation method
-        self.features['x_diff'] = self.compute_x_diff
-        self.features['y_diff'] = self.compute_y_diff
-        self.features['z_diff'] = self.compute_z_diff
+        self.features['centroid_x_diff'] = self.compute_centroid_x_diff
+        self.features['centroid_y_diff'] = self.compute_centroid_y_diff
+        self.features['centroid_z_diff'] = self.compute_centroid_z_diff
         self.features['length_ratio'] = self.compute_length_ratio
         self.features['width_ratio'] = self.compute_width_ratio
         self.features['height_ratio'] = self.compute_height_ratio
@@ -307,7 +311,7 @@ class ObjectPairWrapper:
             # Extract feature set for the object pair from all scenes and
             # write to file
             self.object_pair_dfs[object_pair] = self.extract_object_pair_features(obj1, obj2, self.features)
-            filename = obj1 + '_' + obj2 + '_' + 'features'
+            filename = DATA_DUMP_FOLDER + obj1 + '_' + obj2 + '_' + 'features'
             self.object_pair_dfs[object_pair].to_csv(filename, sep = '\t')
 
             # Fit GMMs for feature set of each object pair and store them in a dictionary
@@ -319,6 +323,21 @@ class ObjectPairWrapper:
         return self.object_pair_feature_gmms
 
     def get_object_pair_frequencies(self, scene_list):
+        """
+        Computes the number of scenes in which an object pair is present,
+        for every object pair.
+
+        Parameters
+        ----------
+        scenes_list: List
+        List of dictionaries, each dict representing a scene and all
+        the attributes info of all objects in the scene.
+
+        Returns
+        -------
+        self.object_pair_frequencies: Dict
+        Dictionary with object pair names as keys and their frequencies as values.
+        """
 
         # Iterating over each object pair
         for pair in itertools.combinations(self.objects_in_scenes, 2):

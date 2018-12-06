@@ -26,9 +26,8 @@ test_scenes_list = test_data_extractor.generate_scenes_list()
 test_objects_in_scenes = test_data_extractor.get_objects_in_scenes()
 test_scenes_df = test_data_extractor.generate_scenes_df()
 
-features = ['x', 'y', 'z', 'length', 'width', 'height']
 
-single_object_wrapper = SingleObjectWrapper(training_objects_in_scenes, training_df_dump_file_name, features)
+single_object_wrapper = SingleObjectWrapper(training_objects_in_scenes, training_df_dump_file_name)
 single_object_gmms = single_object_wrapper.get_gmm_params()
 single_object_frequencies = single_object_wrapper.get_single_object_frequencies(training_scenes_list)
 

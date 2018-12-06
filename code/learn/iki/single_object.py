@@ -7,8 +7,7 @@ import itertools
 from collections import OrderedDict
 
 # Constants
-MAX_GMM_COMPONENTS=10
-DATA_DUMP_FOLDER='data/'
+MAX_GMM_COMPONENTS=4
 
 class SingleObjectWrapper:
     """
@@ -16,7 +15,7 @@ class SingleObjectWrapper:
     from the object attributes database
     """
 
-    def __init__(self, objects_in_scenes, object_attributes_file):
+    def __init__(self, objects_in_scenes, object_attributes_file, data_dump_folder):
         """
         Instantiation
 
@@ -32,8 +31,9 @@ class SingleObjectWrapper:
 
         self.objects_in_scenes = objects_in_scenes
         self.object_attributes_df = pd.read_csv(object_attributes_file, sep = '\t', index_col=0)
-        self.features = OrderedDict()
+        self.data_dump_folder = data_dump_folder
 
+        self.features = OrderedDict()
         self.single_object_frequencies = {}
         self.single_object_dfs = {}
         self.single_object_feature_gmms = {}
@@ -285,7 +285,7 @@ class SingleObjectWrapper:
         for obj in self.objects_in_scenes:
             # Extract feature set for the object from all scenes and write to file
             self.single_object_dfs[obj] = self.extract_single_object_features(obj, self.features)
-            filename = DATA_DUMP_FOLDER + obj + '_'  + 'features'
+            filename = self.data_dump_folder + obj + '_'  + 'features'
             self.single_object_dfs[obj].to_csv(filename, sep='\t')
 
             # Fit GMMs for feature set of each object and store them in a dictionary

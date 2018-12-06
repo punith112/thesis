@@ -7,8 +7,7 @@ import itertools
 from collections import OrderedDict
 
 # Constants
-MAX_GMM_COMPONENTS=10
-DATA_DUMP_FOLDER='data/'
+MAX_GMM_COMPONENTS=4
 
 class ObjectPairWrapper:
     """
@@ -16,9 +15,10 @@ class ObjectPairWrapper:
     from the object attributes database
     """
 
-    def __init__(self, objects_in_scenes):
+    def __init__(self, objects_in_scenes, data_dump_folder):
 
         self.objects_in_scenes = objects_in_scenes
+        self.data_dump_folder = data_dump_folder
 
         self.features = OrderedDict()
         self.object_dfs = {}
@@ -47,7 +47,7 @@ class ObjectPairWrapper:
 
         for obj in objects_in_scenes:
             filename = obj + '_' + 'features'
-            object_dfs[obj] = pd.read_csv('data/' + filename, sep='\t', index_col=0)
+            object_dfs[obj] = pd.read_csv(self.data_dump_folder + filename, sep='\t', index_col=0)
 
         return object_dfs
 
@@ -311,7 +311,7 @@ class ObjectPairWrapper:
             # Extract feature set for the object pair from all scenes and
             # write to file
             self.object_pair_dfs[object_pair] = self.extract_object_pair_features(obj1, obj2, self.features)
-            filename = DATA_DUMP_FOLDER + obj1 + '_' + obj2 + '_' + 'features'
+            filename = self.data_dump_folder + obj1 + '_' + obj2 + '_' + 'features'
             self.object_pair_dfs[object_pair].to_csv(filename, sep = '\t')
 
             # Fit GMMs for feature set of each object pair and store them in a dictionary

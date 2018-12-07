@@ -45,9 +45,27 @@ class SimScoreComputer:
         self.object_pair_gmms = object_pair_gmms
         self.number_of_training_scenes = number_of_training_scenes
 
-        self.single_object_sim_score = 0
-        self.object_pair_sim_score = 0
-        self.total_sim_score = 0
+        self.anomalous = 0
+
+    def check_for_objects(self, test_single_object_frequencies):
+
+        training_set = self.single_object_frequencies.keys()
+        test_set = test_single_object_frequencies.keys()
+
+        new_objects = test_set -(training_set & test_set)
+        absent_objects = training_set - (training_set & test_set)
+
+        if new_objects:
+            self.anomalous = 1
+            print("Anomaly detected! New objects detected!")
+            print("These objects from the test scene were not present in the training scenes: {}".format(new_objects))
+
+        if absent_objects:
+            self.anomalous = 1
+            print("Anomaly detected! Objects missing!")
+            print("These objects from the training scene are absent in the test scene: {}".format(absent_objects))
+
+        return self.anomalous
 
 
     def compute_single_object_sim_score(self, test_single_object_dfs):
@@ -150,10 +168,21 @@ class SimScoreComputer:
             else:
                 overall_sim_scores = overall_sim_scores + single_object_results[obj]['sim_scores']
 
+            if single_object_results[obj]['sim_scores'][0] < 0:
+                self.anomalous = 1
+                print("Anomaly detected! There is something wrong with the {} in this scene!".format(obj))
+
         for object_pair in test_object_pair_dfs:
             overall_results = pd.concat([overall_results, test_object_pair_dfs[object_pair]], axis=1)
             overall_sim_scores = overall_sim_scores + object_pair_results[object_pair]['sim_scores']
 
+            if object_pair_results[object_pair]['sim_scores'][0] < 0:
+                self.anomalous = 1
+                print("Anomaly detected! There is something wrong with the {} relation in this scene!".format(object_pair))
+
         overall_results['sim_scores'] = overall_sim_scores
+
+        if self.anomalous == 0:
+            print("This scene looks okay!")
 
         return single_object_results, object_pair_results, overall_results

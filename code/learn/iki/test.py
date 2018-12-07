@@ -30,31 +30,31 @@ test_scenes_df = test_data_extractor.generate_scenes_df()
 training_data_dump_folder = "training_data/"
 
 training_single_object_wrapper = SingleObjectWrapper(training_objects_in_scenes, training_df_dump_file_name, training_data_dump_folder)
+training_single_object_dfs = training_single_object_wrapper.get_single_object_dfs()
 training_single_object_gmms = training_single_object_wrapper.get_gmm_params()
-training_single_object_dfs = training_single_object_wrapper.single_object_dfs
 training_single_object_frequencies = training_single_object_wrapper.get_single_object_frequencies(training_scenes_list)
 
 training_object_pair_wrapper = ObjectPairWrapper(training_objects_in_scenes, training_data_dump_folder)
+training_object_pair_dfs = training_object_pair_wrapper.get_object_pair_dfs()
 training_object_pair_gmms = training_object_pair_wrapper.get_gmm_params()
-training_object_pair_dfs = training_object_pair_wrapper.object_pair_dfs
 training_object_pair_frequencies = training_object_pair_wrapper.get_object_pair_frequencies(training_scenes_list)
 
 test_data_dump_folder = "test_data/"
 
 test_single_object_wrapper = SingleObjectWrapper(test_objects_in_scenes, test_df_dump_file_name, test_data_dump_folder)
-test_single_object_gmms = test_single_object_wrapper.get_gmm_params()
-test_single_object_dfs = test_single_object_wrapper.single_object_dfs
+test_single_object_dfs = test_single_object_wrapper.get_single_object_dfs()
 test_single_object_frequencies = test_single_object_wrapper.get_single_object_frequencies(test_scenes_list)
 
 test_object_pair_wrapper = ObjectPairWrapper(test_objects_in_scenes, test_data_dump_folder)
-test_object_pair_gmms = test_object_pair_wrapper.get_gmm_params()
-test_object_pair_dfs = test_object_pair_wrapper.object_pair_dfs
-test_object_pair_frequencies = test_object_pair_wrapper.get_object_pair_frequencies(test_scenes_list)
+test_object_pair_dfs = test_object_pair_wrapper.get_object_pair_dfs()
+# test_object_pair_frequencies = test_object_pair_wrapper.get_object_pair_frequencies(test_scenes_list)
 
+print("===================================")
 
 number_of_training_scenes = len(training_scenes_list)
 sim_score_computer = SimScoreComputer(training_single_object_frequencies, training_single_object_gmms,
                                         training_object_pair_frequencies, training_object_pair_gmms,
                                         number_of_training_scenes)
-
-single_object_results, object_pair_results, overall_results = sim_score_computer.compute_overall_sim_score(test_single_object_dfs, test_object_pair_dfs)
+pre_check = sim_score_computer.check_for_objects(test_single_object_frequencies)
+if pre_check == 0:
+    single_object_results, object_pair_results, overall_results = sim_score_computer.compute_overall_sim_score(test_single_object_dfs, test_object_pair_dfs)

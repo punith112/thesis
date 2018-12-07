@@ -255,23 +255,7 @@ class SingleObjectWrapper:
 
         return clf, param_series
 
-
-    def get_gmm_params(self):
-        """
-        Computes the feature vectors for each object as per the
-        feature computation methods specified inside the method and
-        segregates them into separate Pandas DataFrames for each object.
-
-        Fits GMMs to these segregated DataFrames and stores the results
-        in the single_object_feature_gmms dictionary.
-
-        Returns
-        -------
-        self.single_object_feature_gmms: Dict
-        Dictionary that has object names as keys and the corresponding
-        Gaussian Mixture Models and their parameters as values.
-        """
-
+    def get_single_object_dfs(self):
         # Sort the names of the objects in the training data
         self.objects_in_scenes.sort()
 
@@ -291,6 +275,26 @@ class SingleObjectWrapper:
             filename = self.data_dump_folder + obj + '_'  + 'features'
             self.single_object_dfs[obj].to_csv(filename, sep='\t')
 
+        return self.single_object_dfs
+
+    def get_gmm_params(self):
+        """
+        Computes the feature vectors for each object as per the
+        feature computation methods specified inside the method and
+        segregates them into separate Pandas DataFrames for each object.
+
+        Fits GMMs to these segregated DataFrames and stores the results
+        in the single_object_feature_gmms dictionary.
+
+        Returns
+        -------
+        self.single_object_feature_gmms: Dict
+        Dictionary that has object names as keys and the corresponding
+        Gaussian Mixture Models and their parameters as values.
+        """
+
+
+        for obj in self.objects_in_scenes:
             # Fit GMMs for feature set of each object and store them in a dictionary
             gmm, param_series = self.fit_gmm(obj, self.single_object_dfs[obj])
             self.single_object_feature_gmms[obj] = {}

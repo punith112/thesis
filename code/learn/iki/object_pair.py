@@ -283,23 +283,7 @@ class ObjectPairWrapper:
 
         return clf, param_series
 
-
-    def get_gmm_params(self):
-        """
-        Computes the feature vectors for each object pair as per the
-        feature computation methods specified inside the method and
-        segregates them into separate Pandas DataFrames for each object pair.
-
-        Fits GMMs to these segregated DataFrames and stores the results
-        in the object_pair_feature_gmms dictionary.
-
-        Returns
-        -------
-        self.object_pair_feature_gmms: Dict
-        Dictionary that has object pair names as keys and the corresponding
-        Gaussian Mixture Models and their parameters as values.
-        """
-
+    def get_object_pair_dfs(self):
         # Sort the names of the objects in the training data
         self.objects_in_scenes.sort()
         self.object_dfs = self.get_object_dfs(self.objects_in_scenes)
@@ -325,6 +309,28 @@ class ObjectPairWrapper:
             filename = self.data_dump_folder + obj1 + '_' + obj2 + '_' + 'features'
             self.object_pair_dfs[object_pair].to_csv(filename, sep = '\t')
 
+        return self.object_pair_dfs
+
+    def get_gmm_params(self):
+        """
+        Computes the feature vectors for each object pair as per the
+        feature computation methods specified inside the method and
+        segregates them into separate Pandas DataFrames for each object pair.
+
+        Fits GMMs to these segregated DataFrames and stores the results
+        in the object_pair_feature_gmms dictionary.
+
+        Returns
+        -------
+        self.object_pair_feature_gmms: Dict
+        Dictionary that has object pair names as keys and the corresponding
+        Gaussian Mixture Models and their parameters as values.
+        """
+
+        for pair in itertools.combinations(self.objects_in_scenes, 2):
+            obj1 = pair[0]
+            obj2 = pair[1]
+            object_pair = obj1 + '_' + obj2
             # Fit GMMs for feature set of each object pair and store them in a dictionary
             gmm, param_series = self.fit_gmm(obj1, obj2, self.object_pair_dfs[object_pair])
             self.object_pair_feature_gmms[object_pair] = {}

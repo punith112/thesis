@@ -12,3 +12,5 @@ pcl_files/
 __pycache__/
 temp/
 test/
+test_data/
+training_data/

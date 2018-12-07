@@ -16,6 +16,17 @@ class ObjectPairWrapper:
     """
 
     def __init__(self, objects_in_scenes, data_dump_folder):
+        """
+        Instantiation
+
+        Parameters
+        ----------
+        objects_in_scenes: List
+        List of all objects present in the dataset
+
+        data_dump_folder: String
+        File path to where the extracted features are to be dumped.
+        """
 
         self.objects_in_scenes = objects_in_scenes
         self.data_dump_folder = data_dump_folder

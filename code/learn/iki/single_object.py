@@ -27,6 +27,9 @@ class SingleObjectWrapper:
         object_attributes_file: String
         File path to the file containing the Pandas DataFrame with data
         of all the attributes of all the objects in all scenes
+
+        data_dump_folder: String
+        File path to where the extracted features are to be dumped.
         """
 
         self.objects_in_scenes = objects_in_scenes

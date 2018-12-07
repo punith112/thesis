@@ -5,6 +5,7 @@ import pandas as pd
 from single_object import SingleObjectWrapper
 from object_pair import ObjectPairWrapper
 from extract_data import DataExtractor
+from compute_sim_score import SimScoreComputer
 
 training_data_path = "/home/iki/catkin_ws/src/thesis/iki_dataset/training_data/"
 training_dict_dump_file_name = "training_data/training_data.dict"
@@ -50,40 +51,10 @@ test_object_pair_gmms = test_object_pair_wrapper.get_gmm_params()
 test_object_pair_dfs = test_object_pair_wrapper.object_pair_dfs
 test_object_pair_frequencies = test_object_pair_wrapper.get_object_pair_frequencies(test_scenes_list)
 
-# training_total_scenes = 10
-#
-# p_plate = training_single_object_frequencies['plate'] / training_total_scenes
-# gmm_plate = training_single_object_gmms['plate']['gmm']
-
-class SimScoreComputer:
-
-    def __init__(self, single_object_frequencies, single_object_gmms, object_pair_frequencies,
-                    object_pair_gmms, number_of_training_scenes):
-
-        self.single_object_frequencies = single_object_frequencies
-        self.single_object_gmms = single_object_gmms
-        self.object_pair_frequencies = object_pair_frequencies
-        self.object_pair_gmms = object_pair_gmms
-
-        self.single_object_sim_score = 0
-        self.object_pair_sim_score = 0
-        self.total_sim_score = 0
-
-
-    def compute_single_object_sim_score(self, test_single_object_dfs):
-
-        for obj in self.single_object_frequencies:
-            object_frequency = self.single_object_frequencies[obj]
-            object_gmm = self.single_object_gmms[obj]['gmm']
-            object_features_test = test_single_object_dfs[obj]
-
-            self.single_object_sim_score = self.single_object_sim_score + (object_frequency * object_gmm.fit(object_features_test))
-
 
 number_of_training_scenes = len(training_scenes_list)
-
-
 sim_score_computer = SimScoreComputer(training_single_object_frequencies, training_single_object_gmms,
                                         training_object_pair_frequencies, training_object_pair_gmms,
                                         number_of_training_scenes)
-sim_score_computer.compute_single_object_sim_score(test_single_object_dfs)
+
+single_object_results, object_pair_results, overall_results = sim_score_computer.compute_overall_sim_score(test_single_object_dfs, test_object_pair_dfs)

@@ -5,10 +5,13 @@ from sklearn import mixture
 import pickle
 import itertools
 from collections import OrderedDict
+import copy
+
+THRESHOLD = 15
 
 class SimScoreComputer:
     """
-    A class implemntation for computing similarity scores of
+    A class implementation for computing similarity scores of
     test scenes with respect to the training scenes.
     """
 
@@ -45,27 +48,29 @@ class SimScoreComputer:
         self.object_pair_gmms = object_pair_gmms
         self.number_of_training_scenes = number_of_training_scenes
 
-        self.anomalous = 0
+        # self.anomalous = 0
 
-    def check_for_objects(self, test_single_object_frequencies):
-
-        training_set = self.single_object_frequencies.keys()
-        test_set = test_single_object_frequencies.keys()
-
-        new_objects = test_set -(training_set & test_set)
-        absent_objects = training_set - (training_set & test_set)
-
-        if new_objects:
-            self.anomalous = 1
-            print("Anomaly detected! New objects detected!")
-            print("These objects from the test scene were not present in the training scenes: {}".format(new_objects))
-
-        if absent_objects:
-            self.anomalous = 1
-            print("Anomaly detected! Objects missing!")
-            print("These objects from the training scene are absent in the test scene: {}".format(absent_objects))
-
-        return self.anomalous
+    # def check_for_objects(self, test_single_object_dfs):
+    #
+    #     training_set = self.single_object_frequencies.keys()
+    #     test_set = test_single_object_dfs.keys()
+    #     print(test_set)
+    #
+    #
+    #     new_objects = test_set -(training_set & test_set)
+    #     absent_objects = training_set - (training_set & test_set)
+    #
+    #     if new_objects:
+    #         self.anomalous = 1
+    #         print("Anomaly detected! New objects detected!")
+    #         print("These objects from the test scene were not present in the training scenes: {}".format(new_objects))
+    #
+    #     if absent_objects:
+    #         self.anomalous = 1
+    #         print("Anomaly detected! Objects missing!")
+    #         print("These objects from the training scene are absent in the test scene: {}".format(absent_objects))
+    #
+    #     return self.anomalous
 
 
     def compute_single_object_sim_score(self, test_single_object_dfs):
@@ -87,13 +92,17 @@ class SimScoreComputer:
         single object features of each scene with respect to the training data.
         """
 
+        temp_single_object_dfs = copy.deepcopy(test_single_object_dfs)
+
         for obj in self.single_object_frequencies:
             object_frequency = self.single_object_frequencies[obj]
             object_gmm = self.single_object_gmms[obj]['gmm']
 
-            test_single_object_dfs[obj]['sim_scores'] = (object_frequency * object_gmm.score_samples(test_single_object_dfs[obj]) / self.number_of_training_scenes)
+            temp_single_object_dfs[obj][obj + '_' + 'sim_scores'] = (object_frequency *
+                                                         object_gmm.score_samples(test_single_object_dfs[obj])
+                                                         / self.number_of_training_scenes)
 
-        return test_single_object_dfs
+        return temp_single_object_dfs
 
     def compute_object_pair_sim_score(self, test_object_pair_dfs):
         """
@@ -114,13 +123,18 @@ class SimScoreComputer:
         object pair features of each scene with respect to the training data.
         """
 
+        temp_object_pair_dfs = copy.deepcopy(test_object_pair_dfs)
+
         for object_pair in self.object_pair_frequencies:
             object_pair_frequency = self.object_pair_frequencies[object_pair]
             object_pair_gmm = self.object_pair_gmms[object_pair]['gmm']
 
-            test_object_pair_dfs[object_pair]['sim_scores'] = (object_pair_frequency * object_pair_gmm.score_samples(test_object_pair_dfs[object_pair]) / self.number_of_training_scenes)
+            temp_object_pair_dfs[object_pair][object_pair + '_' + 'sim_scores'] = \
+                                                               (object_pair_frequency *
+                                                               object_pair_gmm.score_samples(test_object_pair_dfs[object_pair])
+                                                               / self.number_of_training_scenes)
 
-        return test_object_pair_dfs
+        return temp_object_pair_dfs
 
     def compute_overall_sim_score(self, test_single_object_dfs, test_object_pair_dfs):
         """
@@ -163,26 +177,55 @@ class SimScoreComputer:
 
         for obj in test_single_object_dfs:
             overall_results = pd.concat([overall_results, test_single_object_dfs[obj]], axis=1)
+            overall_results = pd.concat([overall_results, single_object_results[obj][obj + '_' + 'sim_scores']], axis=1)
+            # import ipdb; ipdb.set_trace()
             if overall_sim_scores.empty:
-                overall_sim_scores = single_object_results[obj]['sim_scores']
+                overall_sim_scores = single_object_results[obj][obj + '_' + 'sim_scores']
             else:
-                overall_sim_scores = overall_sim_scores + single_object_results[obj]['sim_scores']
+                overall_sim_scores = overall_sim_scores + single_object_results[obj][obj + '_' + 'sim_scores']
 
-            if single_object_results[obj]['sim_scores'][0] < 0:
-                self.anomalous = 1
-                print("Anomaly detected! There is something wrong with the {} in this scene!".format(obj))
+            # for index, row in single_object_results[obj].iterrows():
+            #     if row[obj + '_' + 'sim_scores'] < THRESHOLD:
+            #         print("Anomaly detected! There is something wrong with the {} in {}!".format(obj, index))
 
         for object_pair in test_object_pair_dfs:
             overall_results = pd.concat([overall_results, test_object_pair_dfs[object_pair]], axis=1)
-            overall_sim_scores = overall_sim_scores + object_pair_results[object_pair]['sim_scores']
+            overall_results = pd.concat([overall_results, object_pair_results[object_pair][object_pair + '_' + 'sim_scores']], axis=1)
+            overall_sim_scores = overall_sim_scores + object_pair_results[object_pair][object_pair + '_' + 'sim_scores']
 
-            if object_pair_results[object_pair]['sim_scores'][0] < 0:
-                self.anomalous = 1
-                print("Anomaly detected! There is something wrong with the {} relation in this scene!".format(object_pair))
+            # for index, row in object_pair_results[object_pair].iterrows():
+            #     if row[object_pair + '_' + 'sim_scores'] < THRESHOLD:
+            #         print("Anomaly detected! There is something wrong with the {} "
+            #               "relation in {}!".format(object_pair, index))
 
         overall_results['sim_scores'] = overall_sim_scores
 
-        if self.anomalous == 0:
-            print("This scene looks okay!")
+        anomalous = 0
+
+        for index, row in overall_results.iterrows():
+
+            print(index)
+            print("--------------")
+            if row['sim_scores'] < 120:
+                anomalous = 1
+                print("There is something wrong with {}!".format(index))
+
+            for obj in test_single_object_dfs:
+                if row[obj + '_' + 'sim_scores'] < 20:
+                    anomalous = 1
+                    print("Anomaly detected! There is something wrong with the {} in {}!".format(obj, index))
+
+            for object_pair in test_object_pair_dfs:
+                if row[object_pair + '_' + 'sim_scores'] < 20:
+                    anomalous = 1
+                    print("Anomaly detected! There is something wrong with the {} "
+                          "relation in {}!".format(object_pair, index))
+
+            if anomalous == 0:
+                print("{} looks okay!".format(index))
+
+            anomalous = 0
+
+            print("")
 
         return single_object_results, object_pair_results, overall_results

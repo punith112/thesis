@@ -257,7 +257,6 @@ class ObjectPairWrapper:
         Pandas Series that has the fitted GMM parameters
         (n-components, weights, means, covariances).
         """
-
         models = []
         param_series = pd.Series()
 
@@ -326,6 +325,8 @@ class ObjectPairWrapper:
         Dictionary that has object pair names as keys and the corresponding
         Gaussian Mixture Models and their parameters as values.
         """
+        print("Fitting GMMs to object pair features from the training scenes...")
+        print("------------")
 
         for pair in itertools.combinations(self.objects_in_scenes, 2):
             obj1 = pair[0]
@@ -336,6 +337,8 @@ class ObjectPairWrapper:
             self.object_pair_feature_gmms[object_pair] = {}
             self.object_pair_feature_gmms[object_pair]['gmm'] = gmm
             self.object_pair_feature_gmms[object_pair]['params'] = param_series
+
+        print("")
 
         return self.object_pair_feature_gmms
 

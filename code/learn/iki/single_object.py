@@ -292,7 +292,8 @@ class SingleObjectWrapper:
         Dictionary that has object names as keys and the corresponding
         Gaussian Mixture Models and their parameters as values.
         """
-
+        print("Fitting GMMs to single object features from the training scenes...")
+        print("------------")
 
         for obj in self.objects_in_scenes:
             # Fit GMMs for feature set of each object and store them in a dictionary
@@ -300,6 +301,8 @@ class SingleObjectWrapper:
             self.single_object_feature_gmms[obj] = {}
             self.single_object_feature_gmms[obj]['gmm'] = gmm
             self.single_object_feature_gmms[obj]['params'] = param_series
+
+        print("")
 
         return self.single_object_feature_gmms
 

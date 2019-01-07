@@ -6,6 +6,7 @@ import pickle
 import itertools
 from collections import OrderedDict
 import copy
+import math
 
 THRESHOLD = 15
 
@@ -16,7 +17,7 @@ class SimScoreComputer:
     """
 
     def __init__(self, single_object_frequencies, single_object_gmms, object_pair_frequencies,
-                    object_pair_gmms, number_of_training_scenes):
+                 object_pair_gmms, number_of_training_scenes):
         """
         Instantiation
 
@@ -136,7 +137,8 @@ class SimScoreComputer:
 
         return temp_object_pair_dfs
 
-    def compute_overall_sim_score(self, test_single_object_dfs, test_object_pair_dfs):
+    def compute_overall_sim_score(self, test_single_object_dfs, test_object_pair_dfs,
+                                  single_object_thresholds, object_pair_thresholds):
         """
         Method that computes similarity scores of each scene
         in the test dataset with respect to the training data.
@@ -178,25 +180,15 @@ class SimScoreComputer:
         for obj in test_single_object_dfs:
             overall_results = pd.concat([overall_results, test_single_object_dfs[obj]], axis=1)
             overall_results = pd.concat([overall_results, single_object_results[obj][obj + '_' + 'sim_scores']], axis=1)
-            # import ipdb; ipdb.set_trace()
             if overall_sim_scores.empty:
                 overall_sim_scores = single_object_results[obj][obj + '_' + 'sim_scores']
             else:
                 overall_sim_scores = overall_sim_scores + single_object_results[obj][obj + '_' + 'sim_scores']
 
-            # for index, row in single_object_results[obj].iterrows():
-            #     if row[obj + '_' + 'sim_scores'] < THRESHOLD:
-            #         print("Anomaly detected! There is something wrong with the {} in {}!".format(obj, index))
-
         for object_pair in test_object_pair_dfs:
             overall_results = pd.concat([overall_results, test_object_pair_dfs[object_pair]], axis=1)
             overall_results = pd.concat([overall_results, object_pair_results[object_pair][object_pair + '_' + 'sim_scores']], axis=1)
             overall_sim_scores = overall_sim_scores + object_pair_results[object_pair][object_pair + '_' + 'sim_scores']
-
-            # for index, row in object_pair_results[object_pair].iterrows():
-            #     if row[object_pair + '_' + 'sim_scores'] < THRESHOLD:
-            #         print("Anomaly detected! There is something wrong with the {} "
-            #               "relation in {}!".format(object_pair, index))
 
         overall_results['sim_scores'] = overall_sim_scores
 
@@ -206,17 +198,17 @@ class SimScoreComputer:
 
             print(index)
             print("--------------")
-            if row['sim_scores'] < 120:
-                anomalous = 1
-                print("There is something wrong with {}!".format(index))
+            # if row['sim_scores'] < 120:
+            #     anomalous = 1
+            #     print("There is something wrong with {}!".format(index))
 
             for obj in test_single_object_dfs:
-                if row[obj + '_' + 'sim_scores'] < 20:
+                if row[obj + '_' + 'sim_scores'] < single_object_thresholds[obj]:
                     anomalous = 1
                     print("Anomaly detected! There is something wrong with the {} in {}!".format(obj, index))
 
             for object_pair in test_object_pair_dfs:
-                if row[object_pair + '_' + 'sim_scores'] < 20:
+                if row[object_pair + '_' + 'sim_scores'] < object_pair_thresholds[object_pair]:
                     anomalous = 1
                     print("Anomaly detected! There is something wrong with the {} "
                           "relation in {}!".format(object_pair, index))
@@ -229,3 +221,21 @@ class SimScoreComputer:
             print("")
 
         return single_object_results, object_pair_results, overall_results
+
+    def compute_training_thresholds(self, test_single_object_dfs, test_object_pair_dfs):
+
+        single_object_results = self.compute_single_object_sim_score(test_single_object_dfs)
+        object_pair_results = self.compute_object_pair_sim_score(test_object_pair_dfs)
+
+        single_object_thresholds = {}
+        object_pair_thresholds = {}
+
+        for obj in single_object_results:
+            # single_object_thresholds[obj] = max(single_object_results[obj][obj + '_sim_scores'])/math.e
+            single_object_thresholds[obj] = max(single_object_results[obj][obj + '_sim_scores']) - 4.5
+
+        for object_pair in object_pair_results:
+            # object_pair_thresholds[object_pair] = max(object_pair_results[object_pair][object_pair + '_sim_scores'])/math.e
+            object_pair_thresholds[object_pair] = max(object_pair_results[object_pair][object_pair + '_sim_scores']) - 4.5
+
+        return single_object_thresholds, object_pair_thresholds

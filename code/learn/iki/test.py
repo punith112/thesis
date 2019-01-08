@@ -95,62 +95,62 @@ test_sim_score_computer.compute_overall_sim_score(test_single_object_dfs, test_o
 
 # -------- Line Plots --------
 
-plate = test_single_object_results['plate'].iloc[:, 6]
-cup = test_single_object_results['cup'].iloc[:, 6]
-spoon = test_single_object_results['spoon'].iloc[:, 6]
-
-cup_plate = test_object_pair_results['cup_plate'].iloc[:, 6]
-cup_spoon = test_object_pair_results['cup_spoon'].iloc[:, 6]
-plate_spoon = test_object_pair_results['plate_spoon'].iloc[:, 6]
-
-# print(plate)
-# print(cup)
-# print(spoon)
+# plate = test_single_object_results['plate'].iloc[:, 6]
+# cup = test_single_object_results['cup'].iloc[:, 6]
+# spoon = test_single_object_results['spoon'].iloc[:, 6]
 #
-# print(cup_plate)
-# print(cup_spoon)
-# print(plate_spoon)
-
-plate_threshold = pd.Series(training_single_object_thresholds['plate'], index=plate.index)
-cup_threshold = pd.Series(training_single_object_thresholds['cup'], index=plate.index)
-spoon_threshold = pd.Series(training_single_object_thresholds['spoon'], index=plate.index)
-
-cup_plate_threshold = pd.Series(training_object_pair_thresholds['cup_plate'], index=plate.index)
-cup_spoon_threshold = pd.Series(training_object_pair_thresholds['cup_spoon'], index=plate.index)
-plate_spoon_threshold = pd.Series(training_object_pair_thresholds['plate_spoon'], index=plate.index)
-
-# fig, ax = plt.subplots()
-# ax.plot(s.index, s)
-
-single_threshold1, = plt.plot(plate_threshold.index, plate_threshold, '--r', label='plate_th')
-single_threshold2, = plt.plot(cup_threshold.index, cup_threshold, '--g', label='cup_th')
-single_threshold3, = plt.plot(spoon_threshold.index, spoon_threshold, '--b', label='spoon_th')
-# first_legend = plt.legend(handles=[single_threshold1, single_threshold2, single_threshold3], loc=4)
-
-pair_threshold1, = plt.plot(cup_plate_threshold.index, cup_plate_threshold, ':r', label='cup_plate_th')
-pair_threshold2, = plt.plot(cup_spoon_threshold.index, cup_spoon_threshold, ':g', label='cup_spoon_th')
-pair_threshold3, = plt.plot(plate_spoon_threshold.index, plate_spoon_threshold, ':b', label='plate_spoon_th')
+# cup_plate = test_object_pair_results['cup_plate'].iloc[:, 6]
+# cup_spoon = test_object_pair_results['cup_spoon'].iloc[:, 6]
+# plate_spoon = test_object_pair_results['plate_spoon'].iloc[:, 6]
+#
+# # print(plate)
+# # print(cup)
+# # print(spoon)
+# #
+# # print(cup_plate)
+# # print(cup_spoon)
+# # print(plate_spoon)
+#
+# plate_threshold = pd.Series(training_single_object_thresholds['plate'], index=plate.index)
+# cup_threshold = pd.Series(training_single_object_thresholds['cup'], index=plate.index)
+# spoon_threshold = pd.Series(training_single_object_thresholds['spoon'], index=plate.index)
+#
+# cup_plate_threshold = pd.Series(training_object_pair_thresholds['cup_plate'], index=plate.index)
+# cup_spoon_threshold = pd.Series(training_object_pair_thresholds['cup_spoon'], index=plate.index)
+# plate_spoon_threshold = pd.Series(training_object_pair_thresholds['plate_spoon'], index=plate.index)
+#
+# # fig, ax = plt.subplots()
+# # ax.plot(s.index, s)
+#
+# single_threshold1, = plt.plot(plate_threshold.index, plate_threshold, '--r', label='plate_th')
+# single_threshold2, = plt.plot(cup_threshold.index, cup_threshold, '--g', label='cup_th')
+# single_threshold3, = plt.plot(spoon_threshold.index, spoon_threshold, '--b', label='spoon_th')
+# # first_legend = plt.legend(handles=[single_threshold1, single_threshold2, single_threshold3], loc=4)
+#
+# pair_threshold1, = plt.plot(cup_plate_threshold.index, cup_plate_threshold, ':r', label='cup_plate_th')
+# pair_threshold2, = plt.plot(cup_spoon_threshold.index, cup_spoon_threshold, ':g', label='cup_spoon_th')
+# pair_threshold3, = plt.plot(plate_spoon_threshold.index, plate_spoon_threshold, ':b', label='plate_spoon_th')
+# # plt.gca().add_artist(first_legend)
+# first_legend = plt.legend(handles=[single_threshold1, single_threshold2, single_threshold3, pair_threshold1, pair_threshold2, pair_threshold3], loc=3)
+#
+# single_sim_score1, = plt.plot(plate.index, plate, '-r', label='plate_score')
+# single_sim_score2, = plt.plot(cup.index, cup, '-g', label='cup_score')
+# single_sim_score3, = plt.plot(spoon.index, spoon, '-b', label='spoon_score')
+# # plt.gca().add_artist(first_legend)
+# # third_legend = plt.legend(handles=[single_sim_score1, single_sim_score2, single_sim_score3], loc=1)
+#
+# pair_sim_score1, = plt.plot(cup_plate.index, cup_plate, '-.r', label='cup_plate_score')
+# pair_sim_score2, = plt.plot(cup_spoon.index, cup_spoon, '-.g', label='cup_spoon_score')
+# pair_sim_score3, = plt.plot(plate_spoon.index, plate_spoon, '-.b', label='plate_spoon_score')
 # plt.gca().add_artist(first_legend)
-first_legend = plt.legend(handles=[single_threshold1, single_threshold2, single_threshold3, pair_threshold1, pair_threshold2, pair_threshold3], loc=3)
-
-single_sim_score1, = plt.plot(plate.index, plate, '-r', label='plate_score')
-single_sim_score2, = plt.plot(cup.index, cup, '-g', label='cup_score')
-single_sim_score3, = plt.plot(spoon.index, spoon, '-b', label='spoon_score')
-# plt.gca().add_artist(first_legend)
-# third_legend = plt.legend(handles=[single_sim_score1, single_sim_score2, single_sim_score3], loc=1)
-
-pair_sim_score1, = plt.plot(cup_plate.index, cup_plate, '-.r', label='cup_plate_score')
-pair_sim_score2, = plt.plot(cup_spoon.index, cup_spoon, '-.g', label='cup_spoon_score')
-pair_sim_score3, = plt.plot(plate_spoon.index, plate_spoon, '-.b', label='plate_spoon_score')
-plt.gca().add_artist(first_legend)
-third_legend = plt.legend(handles=[single_sim_score1, single_sim_score2, single_sim_score3, pair_sim_score1, pair_sim_score2, pair_sim_score3], loc=2)
-
-# plt.ylim(-550, 35)
-plt.ylim(0, 35)
-plt.ylabel('similarity scores')
-plt.xticks(rotation=60)
-plt.savefig('test.png')
-plt.show(block=False)
+# third_legend = plt.legend(handles=[single_sim_score1, single_sim_score2, single_sim_score3, pair_sim_score1, pair_sim_score2, pair_sim_score3], loc=2)
+#
+# # plt.ylim(-550, 35)
+# plt.ylim(0, 35)
+# plt.ylabel('similarity scores')
+# plt.xticks(rotation=60)
+# plt.savefig('test.png')
+# plt.show(block=False)
 
 
 
@@ -220,3 +220,70 @@ plt.show(block=False)
 
 
 # --------- Line plots, but separate ones -------
+
+plate = test_single_object_results['plate'].iloc[:, 6]
+cup = test_single_object_results['cup'].iloc[:, 6]
+spoon = test_single_object_results['spoon'].iloc[:, 6]
+
+plate_threshold = pd.Series(training_single_object_thresholds['plate'], index=plate.index)
+cup_threshold = pd.Series(training_single_object_thresholds['cup'], index=cup.index)
+spoon_threshold = pd.Series(training_single_object_thresholds['spoon'], index=plate.index)
+
+plt.figure(1)
+
+single_threshold1, = plt.plot(plate_threshold.index, plate_threshold, '--r', label='plate_th')
+single_threshold2, = plt.plot(cup_threshold.index, cup_threshold, '--g', label='cup_th')
+single_threshold3, = plt.plot(spoon_threshold.index, spoon_threshold, '--b', label='spoon_th')
+first_legend = plt.legend(handles=[single_threshold1, single_threshold2, single_threshold3], loc=4)
+
+single_sim_score1, = plt.plot(plate.index, plate, 'o', c='red', alpha= 0.8, label='plate_score')
+single_sim_score2, = plt.plot(cup.index, cup, 'o', c='green', alpha= 0.8, label='cup_score')
+single_sim_score3, = plt.plot(spoon.index, spoon, 'o', c='blue', alpha= 0.8, label='spoon_score')
+plt.plot(plate.index, plate, 'r', alpha= 0.25)
+plt.plot(cup.index, cup, 'g', alpha= 0.25)
+plt.plot(spoon.index, spoon, 'b', alpha= 0.25)
+plt.gca().add_artist(first_legend)
+second_legend = plt.legend(handles=[single_sim_score1, single_sim_score2, single_sim_score3], loc=1)
+
+# plt.ylim(0, 35)
+# plt.yscale('log')
+plt.axis('tight')
+plt.ylabel('similarity scores')
+plt.xticks(rotation=60)
+plt.title('Single Object Similarity Scores')
+
+
+
+cup_plate = test_object_pair_results['cup_plate'].iloc[:, 6]
+cup_spoon = test_object_pair_results['cup_spoon'].iloc[:, 6]
+plate_spoon = test_object_pair_results['plate_spoon'].iloc[:, 6]
+
+cup_plate_threshold = pd.Series(training_object_pair_thresholds['cup_plate'], index=plate.index)
+cup_spoon_threshold = pd.Series(training_object_pair_thresholds['cup_spoon'], index=plate.index)
+plate_spoon_threshold = pd.Series(training_object_pair_thresholds['plate_spoon'], index=plate.index)
+
+plt.figure(2)
+
+pair_threshold1, = plt.plot(cup_plate_threshold.index, cup_plate_threshold, ':r', label='cup_plate_th')
+pair_threshold2, = plt.plot(cup_spoon_threshold.index, cup_spoon_threshold, ':g', label='cup_spoon_th')
+pair_threshold3, = plt.plot(plate_spoon_threshold.index, plate_spoon_threshold, ':b', label='plate_spoon_th')
+# plt.gca().add_artist(first_legend)
+third_legend = plt.legend(handles=[pair_threshold1, pair_threshold2, pair_threshold3], loc=4)
+
+pair_sim_score1, = plt.plot(cup_plate.index, cup_plate, 'o', c='red', alpha=0.5, markeredgecolor='none', label='cup_plate_score')
+pair_sim_score2, = plt.plot(cup_spoon.index, cup_spoon, 'o', c='green', alpha=0.5, markeredgecolor='none', label='cup_spoon_score')
+pair_sim_score3, = plt.plot(plate_spoon.index, plate_spoon, 'o', c='blue', alpha=0.5, markeredgecolor='none', label='plate_spoon_score')
+plt.plot(cup_plate.index, cup_plate, 'r', alpha= 0.25)
+plt.plot(cup_spoon.index, cup_spoon, 'g', alpha= 0.25)
+plt.plot(plate_spoon.index, plate_spoon, 'b', alpha= 0.25)
+plt.gca().add_artist(third_legend)
+fourth_legend = plt.legend(handles=[pair_sim_score1, pair_sim_score2, pair_sim_score3], loc=1)
+
+# plt.ylim(0, 35)
+# plt.yscale('log')
+plt.axis('tight')
+plt.ylabel('similarity scores')
+plt.xticks(rotation=60)
+plt.title('Object Pair Similarity Scores')
+
+plt.show(block=False)

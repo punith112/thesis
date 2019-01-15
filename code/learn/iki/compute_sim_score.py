@@ -193,6 +193,18 @@ class SimScoreComputer:
         overall_results['sim_scores'] = overall_sim_scores
 
         anomalous = 0
+        results_table = pd.DataFrame(index=overall_results.index)
+
+        for obj in test_single_object_dfs:
+            results_table[obj] = 0
+            # results_table[obj] = "Norm"
+
+        for object_pair in test_object_pair_dfs:
+            results_table[object_pair] = 0
+            # results_table[object_pair] = "Norm"
+
+        results_table['overall'] = 0
+        # results_table['overall'] = "Norm"
 
         for index, row in overall_results.iterrows():
 
@@ -205,11 +217,19 @@ class SimScoreComputer:
             for obj in test_single_object_dfs:
                 if row[obj + '_' + 'sim_scores'] < single_object_thresholds[obj]:
                     anomalous = 1
+                    results_table.loc[index, obj] = 1
+                    results_table.loc[index, 'overall'] = 1
+                    # results_table.loc[index, obj] = "Anom"
+                    # results_table.loc[index, 'overall'] = "Anom"
                     print("Anomaly detected! There is something wrong with the {} in {}!".format(obj, index))
 
             for object_pair in test_object_pair_dfs:
                 if row[object_pair + '_' + 'sim_scores'] < object_pair_thresholds[object_pair]:
                     anomalous = 1
+                    results_table.loc[index, object_pair] = 1
+                    results_table.loc[index, 'overall'] = 1
+                    # results_table.loc[index, object_pair] = "Anom"
+                    # results_table.loc[index, 'overall'] = "Anom"
                     print("Anomaly detected! There is something wrong with the {} "
                           "relation in {}!".format(object_pair, index))
 
@@ -220,7 +240,7 @@ class SimScoreComputer:
 
             print("")
 
-        return single_object_results, object_pair_results, overall_results
+        return single_object_results, object_pair_results, overall_results, results_table
 
     def compute_training_thresholds(self, test_single_object_dfs, test_object_pair_dfs):
 

@@ -88,10 +88,23 @@ test_sim_score_computer = SimScoreComputer(training_single_object_frequencies, t
 #
 #
 #
-test_single_object_results, test_object_pair_results, test_overall_results = \
+test_single_object_results, test_object_pair_results, test_overall_results, test_results_table = \
 test_sim_score_computer.compute_overall_sim_score(test_single_object_dfs, test_object_pair_dfs,
                                                   training_single_object_thresholds, training_object_pair_thresholds)
 
+ground_truth_table = pd.read_csv('ground_truth.csv', sep = ',', index_col=0)
+
+match_table = pd.DataFrame()
+
+ground_truth_table = ground_truth_table.reindex(sorted(ground_truth_table.columns), axis=1)
+test_results_table = test_results_table.reindex(sorted(test_results_table.columns), axis=1)
+
+for index, row in test_results_table.iterrows():
+    temp = (row == ground_truth_table.loc[index])
+    match_table = pd.concat([match_table, temp], axis=1, sort=False)
+
+match_table = match_table.T
+match_table = match_table.astype('int')
 
 # -------- Line Plots --------
 
@@ -245,9 +258,9 @@ plt.plot(spoon.index, spoon, 'b', alpha= 0.25)
 plt.gca().add_artist(first_legend)
 second_legend = plt.legend(handles=[single_sim_score1, single_sim_score2, single_sim_score3], loc=1)
 
-# plt.ylim(0, 35)
+plt.ylim(5, 35)
 # plt.yscale('log')
-plt.axis('tight')
+# plt.axis('tight')
 plt.ylabel('similarity scores')
 plt.xticks(rotation=60)
 plt.title('Single Object Similarity Scores')
@@ -279,9 +292,9 @@ plt.plot(plate_spoon.index, plate_spoon, 'b', alpha= 0.25)
 plt.gca().add_artist(third_legend)
 fourth_legend = plt.legend(handles=[pair_sim_score1, pair_sim_score2, pair_sim_score3], loc=1)
 
-# plt.ylim(0, 35)
+plt.ylim(5, 35)
 # plt.yscale('log')
-plt.axis('tight')
+# plt.axis('tight')
 plt.ylabel('similarity scores')
 plt.xticks(rotation=60)
 plt.title('Object Pair Similarity Scores')

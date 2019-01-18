@@ -43,13 +43,6 @@ training_object_pair_frequencies = training_object_pair_wrapper.get_object_pair_
 
 number_of_training_scenes = len(training_scenes_list)
 
-training_sim_score_computer = SimScoreComputer(training_single_object_frequencies, training_single_object_gmms,
-                                        training_object_pair_frequencies, training_object_pair_gmms,
-                                        number_of_training_scenes)
-
-training_single_object_thresholds, training_object_pair_thresholds = \
-training_sim_score_computer.compute_training_thresholds(training_single_object_dfs, training_object_pair_dfs)
-
 
 
 # Path to the test scenes
@@ -81,47 +74,81 @@ test_object_pair_frequencies = test_object_pair_wrapper.get_object_pair_frequenc
 #
 number_of_training_scenes = len(training_scenes_list)
 #
-test_sim_score_computer = SimScoreComputer(training_single_object_frequencies, training_single_object_gmms,
-                                        training_object_pair_frequencies, training_object_pair_gmms,
-                                        number_of_training_scenes)
 
-# # pre_check = sim_score_computer.check_for_objects(test_single_object_frequencies)
-#
-#
-#
-test_single_object_results, test_object_pair_results, test_overall_results, test_results_table = \
-test_sim_score_computer.compute_overall_sim_score(test_single_object_dfs, test_object_pair_dfs,
-                                                  training_single_object_thresholds, training_object_pair_thresholds)
-
-ground_truth_table = pd.read_csv('ground_truth.csv', sep = ',', index_col=0)
-
-diff_table = pd.DataFrame()
-sum_table = pd.DataFrame()
-
-ground_truth_table = ground_truth_table.reindex(sorted(ground_truth_table.columns), axis=1)
-test_results_table = test_results_table.reindex(sorted(test_results_table.columns), axis=1)
-
-for index, row in test_results_table.iterrows():
-    # temp = (row == ground_truth_table.loc[index])
-    temp1 = (row - ground_truth_table.loc[index])
-    temp2 = (row + ground_truth_table.loc[index])
-    diff_table = pd.concat([diff_table, temp1], axis=1, sort=False)
-    sum_table = pd.concat([sum_table, temp2], axis=1, sort=False)
-
-diff_table = diff_table.T
-diff_table = diff_table.astype('int')
-
-sum_table = sum_table.T
-sum_table = sum_table.astype('int')
+threshold_params = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
 
 recall_values = {}
 precision_values = {}
+f1_measure_values = {}
 
-for col in list(sum_table):
-    recall_values[col] = np.sum(sum_table[col] == 2) / (np.sum(sum_table[col] == 2) + np.sum(diff_table[col] == -1))
-    # recall_values[col] = (np.sum(sum_table[col] == 2) + np.sum(diff_table[col] == -1))
-    precision_values[col] = np.sum(sum_table[col] == 2) / (np.sum(sum_table[col] == 2) + np.sum(diff_table[col] == 1))
-    # precision_values[col] = (np.sum(sum_table[col] == 2) + np.sum(diff_table[col] == 1))
+
+for threshold_diff in threshold_params:
+    training_sim_score_computer = SimScoreComputer(training_single_object_frequencies, training_single_object_gmms,
+                                            training_object_pair_frequencies, training_object_pair_gmms,
+                                            number_of_training_scenes)
+
+    training_single_object_thresholds, training_object_pair_thresholds = \
+    training_sim_score_computer.compute_training_thresholds(training_single_object_dfs, training_object_pair_dfs, threshold_diff)
+
+
+    test_sim_score_computer = SimScoreComputer(training_single_object_frequencies, training_single_object_gmms,
+                                            training_object_pair_frequencies, training_object_pair_gmms,
+                                            number_of_training_scenes)
+
+    # # pre_check = sim_score_computer.check_for_objects(test_single_object_frequencies)
+
+    test_single_object_results, test_object_pair_results, test_overall_results, test_results_table = \
+    test_sim_score_computer.compute_overall_sim_score(test_single_object_dfs, test_object_pair_dfs,
+                                                      training_single_object_thresholds, training_object_pair_thresholds)
+
+    # --------Cross-validation to fix the thresholds----------
+    ground_truth_table = pd.read_csv('ground_truth.csv', sep = ',', index_col=0)
+
+    diff_table = pd.DataFrame()
+    sum_table = pd.DataFrame()
+
+    ground_truth_table = ground_truth_table.reindex(sorted(ground_truth_table.columns), axis=1)
+    test_results_table = test_results_table.reindex(sorted(test_results_table.columns), axis=1)
+
+    for index, row in test_results_table.iterrows():
+        # temp = (row == ground_truth_table.loc[index])
+        temp1 = (row - ground_truth_table.loc[index])
+        temp2 = (row + ground_truth_table.loc[index])
+        diff_table = pd.concat([diff_table, temp1], axis=1, sort=False)
+        sum_table = pd.concat([sum_table, temp2], axis=1, sort=False)
+
+    diff_table = diff_table.T
+    diff_table = diff_table.astype('int')
+
+    sum_table = sum_table.T
+    sum_table = sum_table.astype('int')
+
+    recall_values[threshold_diff] = {}
+    precision_values[threshold_diff] = {}
+    f1_measure_values[threshold_diff] = {}
+
+    for col in list(sum_table):
+        recall_values[threshold_diff][col] = np.sum(sum_table[col] == 2) / (np.sum(sum_table[col] == 2) + np.sum(diff_table[col] == -1))
+        precision_values[threshold_diff][col] = np.sum(sum_table[col] == 2) / (np.sum(sum_table[col] == 2) + np.sum(diff_table[col] == 1))
+        f1_measure_values[threshold_diff][col] = ((2 * recall_values[threshold_diff][col] * precision_values[threshold_diff][col]) /
+                                                   (recall_values[threshold_diff][col] + precision_values[threshold_diff][col]))
+
+f1_measure_stats = {}
+
+for key in f1_measure_values:
+    f1_measure_stats[key] = {}
+    f1_measure_stats[key]['mean'] = np.mean(list(f1_measure_values[key].values()))
+    f1_measure_stats[key]['std'] = np.std(list(f1_measure_values[key].values()))
+
+temp = 0
+
+for key in f1_measure_stats:
+    if f1_measure_stats[key]['mean'] > temp:
+        optimum_threshold = key
+        temp = f1_measure_stats[key]['mean']
+
+
+print('The optimum threshold is {}'.format(optimum_threshold))
 
 # -------- Line Plots --------
 

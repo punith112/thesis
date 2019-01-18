@@ -8,7 +8,7 @@ from collections import OrderedDict
 import copy
 import math
 
-THRESHOLD = 15
+THRESHOLD = 12.5
 
 class SimScoreComputer:
     """
@@ -242,7 +242,7 @@ class SimScoreComputer:
 
         return single_object_results, object_pair_results, overall_results, results_table
 
-    def compute_training_thresholds(self, test_single_object_dfs, test_object_pair_dfs):
+    def compute_training_thresholds(self, test_single_object_dfs, test_object_pair_dfs, threshold_diff):
 
         single_object_results = self.compute_single_object_sim_score(test_single_object_dfs)
         object_pair_results = self.compute_object_pair_sim_score(test_object_pair_dfs)
@@ -252,10 +252,10 @@ class SimScoreComputer:
 
         for obj in single_object_results:
             # single_object_thresholds[obj] = max(single_object_results[obj][obj + '_sim_scores'])/math.e
-            single_object_thresholds[obj] = max(single_object_results[obj][obj + '_sim_scores']) - 4.5
+            single_object_thresholds[obj] = max(single_object_results[obj][obj + '_sim_scores']) - threshold_diff
 
         for object_pair in object_pair_results:
             # object_pair_thresholds[object_pair] = max(object_pair_results[object_pair][object_pair + '_sim_scores'])/math.e
-            object_pair_thresholds[object_pair] = max(object_pair_results[object_pair][object_pair + '_sim_scores']) - 4.5
+            object_pair_thresholds[object_pair] = max(object_pair_results[object_pair][object_pair + '_sim_scores']) - threshold_diff
 
         return single_object_thresholds, object_pair_thresholds

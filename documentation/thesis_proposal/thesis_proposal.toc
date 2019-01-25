@@ -10,5 +10,5 @@
 \contentsline {paragraph}{Modeling Single Object Features:}{6}
 \contentsline {paragraph}{Learning object pair relationships:}{6}
 \contentsline {subsection}{\numberline {3.5}Computation of Scene Similarity Score}{7}
-\contentsline {section}{\numberline {4}Timeline}{9}
-\contentsline {section}{\numberline {5}References}{10}
+\contentsline {section}{\numberline {4}Timeline}{11}
+\contentsline {section}{\numberline {5}References}{12}

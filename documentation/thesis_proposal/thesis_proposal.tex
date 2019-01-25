@@ -18,6 +18,8 @@
 \usepackage[nottoc,numbib]{tocbibind}
 \usepackage[justification=centering]{caption}
 \usepackage{chronosys}
+\usepackage{csvsimple}
+\usepackage{booktabs}
 
 \def\chron@selectmonth#1{\ifcase#1\or Januar\or Februar\or März\or April\or Mai\or Juni\or Juli\or August\or September\or Oktober\or November\or Dezember\fi}
 
@@ -183,10 +185,101 @@ where $N_{o_i, o_j}$ is the number of training scenes where both $o_i$ and $o_j$
 
 A threshold shall be fixed empirically after running the algorithm through some known anomalous scenes and this threshold shall then be used to detect future anomalous scenes. Furthermore, to identify the source of the anomaly in the scene, having thresholds for individual terms in the summation shall also be explored.
 
+$f_{plate, s_{1}}, f_{plate, s_{2}},....,f_{plate, s_{8}}$
 
+$GMM_{plate, dinner\_table}$
 
+$GMM_{cup, dinner\_table}, GMM_{spoon, dinner\_table}$
 
+$f_{plate, cup, s_{1}}, f_{plate, cup, s_{2}},....,f_{plate, cup, s_{8}}$
 
+$GMM_{plate, cup, dinner\_table}$
+
+$GMM_{cup, spoon, dinner\_table}, GMM_{spoon, plate, dinner\_table}$
+
+$GMM_{plate, dinner\_table}, GMM_{cup, dinner\_table}, GMM_{spoon, dinner\_table}$
+
+$GMM_{plate, cup, dinner\_table}, GMM_{cup, spoon, dinner\_table}, GMM_{spoon, plate, dinner\_table}$
+
+$n_c$ = number of mixtures
+
+$\pi_z$ = weight of the $z^{th}$ mixture
+
+$\Sigma_{o_i}^z$ = covariance matrix
+
+$dim$ = dimensionality of the feature space
+
+At $x = \mu$
+
+\[log(f(x|\mu, \sigma^2)) = log(\frac{1}{\sqrt(2\pi\sigma^2)})\]
+
+\[sim\_score(plate, s_u, dinner\_table) = GMM_{plate, dinner\_table}(f_{plate, s_u})\]
+
+\[sim\_score(cup\_plate, s_u, dinner\_table) = GMM_{cup\_plate, dinner\_table}(f_{cup\_plate, s_u})\]
+
+\begin{tabular}{lrrrrrr}
+\toprule
+{} &  plate\_x &  plate\_y &  plate\_z &  plate\_length &  plate\_width &  plate\_height \\
+\midrule
+table\_1 &            0.3235 &            0.2085 &             0.021 &         0.215 &        0.215 &         0.042 \\
+table\_2 &            0.3245 &            0.2265 &             0.021 &         0.215 &        0.215 &         0.042 \\
+table\_3 &            0.3230 &            0.1745 &             0.021 &         0.214 &        0.215 &         0.042 \\
+table\_4 &            0.3210 &            0.1745 &             0.021 &         0.214 &        0.215 &         0.042 \\
+table\_5 &            0.3195 &            0.1715 &             0.021 &         0.215 &        0.215 &         0.042 \\
+table\_6 &            0.3335 &            0.1975 &             0.021 &         0.215 &        0.215 &         0.042 \\
+
+table\_7 &            0.3155 &            0.2375 &             0.021 &         0.215 &        0.215 &         0.042 \\
+table\_8 &            0.3105 &            0.2365 &             0.021 &         0.215 &        0.215 &         0.042 \\
+\bottomrule
+\end{tabular}
+
+\begin{tabular}{lrrrrrr}
+\toprule
+{} &  x\_diff &  y\_diff &  z\_diff &  length\_ratio &  width\_ratio &  height\_ratio \\
+\midrule
+table\_1 &                     0.1805 &                     0.0825 &                      0.016 &                0.372093 &               0.372093 &                1.761905 \\
+table\_2 &                     0.1835 &                     0.0535 &                      0.016 &                0.372093 &               0.372093 &                1.761905 \\
+table\_3 &                     0.1790 &                     0.1035 &                      0.016 &                0.373832 &               0.372093 &                1.761905 \\
+table\_4 &                     0.1590 &                     0.1335 &                      0.016 &                0.373832 &               0.372093 &                1.761905 \\
+table\_5 &                     0.1595 &                     0.1315 &                      0.016 &                0.372093 &               0.372093 &                1.761905 \\
+table\_6 &                     0.1695 &                     0.0915 &                      0.016 &                0.372093 &               0.372093 &                1.761905 \\
+
+table\_7 &                     0.1865 &                     0.0505 &                      0.016 &                0.372093 &               0.372093 &                1.761905 \\
+table\_8 &                     0.1895 &                     0.0355 &                      0.016 &                0.372093 &               0.372093 &                1.761905 \\
+\bottomrule
+\end{tabular}
+
+\begin{tabular}{lr}
+\toprule
+{} &  plate\_sim\_scores \\
+\midrule
+table\_1 &         30.709087 \\
+table\_2 &         30.043966 \\
+table\_3 &         30.133565 \\
+table\_4 &         30.023998 \\
+table\_5 &         29.566471 \\
+table\_6 &         28.882619 \\
+
+table\_7 &         29.895145 \\
+table\_8 &         29.185859 \\
+\bottomrule
+\end{tabular}
+
+\begin{tabular}{lr}
+\toprule
+{} &  cup\_plate\_sim\_scores \\
+\midrule
+table\_1 &             30.228529 \\
+table\_2 &             30.322540 \\
+table\_3 &             28.462048 \\
+table\_4 &             29.377041 \\
+table\_5 &             29.520910 \\
+table\_6 &             30.225157 \\
+
+table\_7 &             30.345241 \\
+table\_8 &             29.740833 \\
+\bottomrule
+\end{tabular}
 
 \section{Timeline}
 

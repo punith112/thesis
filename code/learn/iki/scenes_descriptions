@@ -1,0 +1,28 @@
+Normal Scenes Config 1
+
+Tables 1-10
+40 normal scenes to be captured for training
+Tables 41-42
+
+Normal Scenes Config 2
+
+Tables 31-35
+Tables 43-55
+40 normal scenes to be captured for training
+
+Anomalies Config 1
+
+Tables 13, 23 - Cup misplaced
+Tables 24, 25 - Plate misplaced
+Tables 26, 27 - Spoon misplaced
+Table 28 - Plate, spoon misplaced
+Table 29 - Plate, cup misplaced
+Table 30 - Spoon, cup misplaced
+Tables 36-38 - Spoon in unusual orientation
+Tables 39-40 - All objects misplaced
+
+Anomalies Config 2
+
+Tables 56-58 - Plate misplaced (plate positioned as per config 1 in scene 58)
+Tables 59-61 - Cup misplaced (cup positioned as per config 1 in scene 61)
+Tables 62-64 - Spoon misplaced (spoon positioned as per config 1 in scene 64)

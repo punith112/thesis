@@ -103,6 +103,8 @@ class SimScoreComputer:
                                                          object_gmm.score_samples(test_single_object_dfs[obj])
                                                          / self.number_of_training_scenes)
 
+            temp_single_object_dfs[obj][obj + '_' + 'cluster'] = (object_gmm.predict(test_single_object_dfs[obj]))
+
         return temp_single_object_dfs
 
     def compute_object_pair_sim_score(self, test_object_pair_dfs):
@@ -134,6 +136,8 @@ class SimScoreComputer:
                                                                (object_pair_frequency *
                                                                object_pair_gmm.score_samples(test_object_pair_dfs[object_pair])
                                                                / self.number_of_training_scenes)
+
+            temp_object_pair_dfs[object_pair][object_pair + '_' + 'cluster'] = object_pair_gmm.predict(test_object_pair_dfs[object_pair])
 
         return temp_object_pair_dfs
 
@@ -180,6 +184,7 @@ class SimScoreComputer:
         for obj in test_single_object_dfs:
             overall_results = pd.concat([overall_results, test_single_object_dfs[obj]], axis=1)
             overall_results = pd.concat([overall_results, single_object_results[obj][obj + '_' + 'sim_scores']], axis=1)
+            overall_results = pd.concat([overall_results, single_object_results[obj][obj + '_' + 'cluster']], axis=1)
             if overall_sim_scores.empty:
                 overall_sim_scores = single_object_results[obj][obj + '_' + 'sim_scores']
             else:
@@ -188,6 +193,7 @@ class SimScoreComputer:
         for object_pair in test_object_pair_dfs:
             overall_results = pd.concat([overall_results, test_object_pair_dfs[object_pair]], axis=1)
             overall_results = pd.concat([overall_results, object_pair_results[object_pair][object_pair + '_' + 'sim_scores']], axis=1)
+            overall_results = pd.concat([overall_results, object_pair_results[object_pair][object_pair + '_' + 'cluster']], axis=1)
             overall_sim_scores = overall_sim_scores + object_pair_results[object_pair][object_pair + '_' + 'sim_scores']
 
         overall_results['sim_scores'] = overall_sim_scores
@@ -215,7 +221,9 @@ class SimScoreComputer:
             #     print("There is something wrong with {}!".format(index))
 
             for obj in test_single_object_dfs:
-                if row[obj + '_' + 'sim_scores'] < single_object_thresholds[obj]:
+                # component = 'component_' + str(int(row[obj + '_' + 'cluster']))
+                component = int(row[obj + '_' + 'cluster'])
+                if row[obj + '_' + 'sim_scores'] < single_object_thresholds[obj][component]:
                     anomalous = 1
                     results_table.loc[index, obj] = 1
                     results_table.loc[index, 'overall'] = 1
@@ -224,7 +232,9 @@ class SimScoreComputer:
                     print("Anomaly detected! There is something wrong with the {} in {}!".format(obj, index))
 
             for object_pair in test_object_pair_dfs:
-                if row[object_pair + '_' + 'sim_scores'] < object_pair_thresholds[object_pair]:
+                # component = 'component_' + str(int(row[object_pair + '_' + 'cluster']))
+                component = int(row[object_pair + '_' + 'cluster'])
+                if row[object_pair + '_' + 'sim_scores'] < object_pair_thresholds[object_pair][component]:
                     anomalous = 1
                     results_table.loc[index, object_pair] = 1
                     results_table.loc[index, 'overall'] = 1
@@ -251,11 +261,30 @@ class SimScoreComputer:
         object_pair_thresholds = {}
 
         for obj in single_object_results:
-            # single_object_thresholds[obj] = max(single_object_results[obj][obj + '_sim_scores'])/math.e
-            single_object_thresholds[obj] = max(single_object_results[obj][obj + '_sim_scores']) - threshold_diff
+            # single_object_thresholds[obj] = {}
+            # for i in range(self.single_object_gmms[obj]['params'].loc['n_components']):
+            #     # single_object_thresholds[obj] = max(single_object_results[obj][obj + '_sim_scores'])/math.e
+            #     # single_object_thresholds[obj]['component_' + i] = max(single_object_results[obj][obj + '_sim_scores']) - threshold_diff
+            #     single_object_thresholds[obj]['component_' + str(i)] = \
+            #     self.single_object_gmms[obj]['gmm'].score_samples(self.single_object_gmms[obj]['params'].loc['means']) \
+            #     - threshold_diff
+
+            single_object_thresholds[obj] = \
+            self.single_object_gmms[obj]['gmm'].score_samples(self.single_object_gmms[obj]['params'].loc['means']) - threshold_diff
+
+
+        # for object_pair in object_pair_results:
+        #     object_pair_thresholds[object_pair] = {}
+        #     for i in range(self.object_pair_gmms[object_pair]['params'].loc['n_components']):
+        #         # object_pair_thresholds[object_pair] = max(object_pair_results[object_pair][object_pair + '_sim_scores'])/math.e
+        #         # object_pair_thresholds[object_pair] = max(object_pair_results[object_pair][object_pair + '_sim_scores']) - threshold_diff
+        #         object_pair_thresholds[object_pair]['component_' + str(i)] = \
+        #         self.object_pair_gmms[object_pair]['gmm'].score_samples(self.object_pair_gmms[object_pair]['params'].loc['means']) \
+        #         - threshold_diff
 
         for object_pair in object_pair_results:
-            # object_pair_thresholds[object_pair] = max(object_pair_results[object_pair][object_pair + '_sim_scores'])/math.e
-            object_pair_thresholds[object_pair] = max(object_pair_results[object_pair][object_pair + '_sim_scores']) - threshold_diff
+            object_pair_thresholds[object_pair] = \
+            self.object_pair_gmms[object_pair]['gmm'].score_samples(self.object_pair_gmms[object_pair]['params'].loc['means']) \
+            - threshold_diff
 
         return single_object_thresholds, object_pair_thresholds

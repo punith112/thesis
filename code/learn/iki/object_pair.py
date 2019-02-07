@@ -7,7 +7,7 @@ import itertools
 from collections import OrderedDict
 
 # Constants
-MAX_GMM_COMPONENTS=4
+MAX_GMM_COMPONENTS=3
 
 class ObjectPairWrapper:
     """
@@ -262,6 +262,7 @@ class ObjectPairWrapper:
 
         for i in range(MAX_GMM_COMPONENTS):
             models.append(mixture.GaussianMixture(n_components=i+1, covariance_type='full'))
+            obj_pair_df = obj_pair_df.dropna(axis=0)
             models[i].fit(obj_pair_df)
 
         best_aic, best_model_aic = min((models[i].aic(obj_pair_df), models[i]) for i in range(len(models)))

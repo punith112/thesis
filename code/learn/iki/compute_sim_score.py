@@ -98,12 +98,27 @@ class SimScoreComputer:
         for obj in self.single_object_frequencies:
             object_frequency = self.single_object_frequencies[obj]
             object_gmm = self.single_object_gmms[obj]['gmm']
+            obj_df = test_single_object_dfs[obj]
 
-            temp_single_object_dfs[obj][obj + '_' + 'sim_scores'] = (object_frequency *
-                                                         object_gmm.score_samples(test_single_object_dfs[obj])
-                                                         / self.number_of_training_scenes)
+            try:
+                temp_single_object_dfs[obj][obj + '_' + 'sim_scores'] = object_gmm.score_samples(obj_df)
+                temp_single_object_dfs[obj][obj + '_' + 'cluster'] = object_gmm.predict(obj_df)
 
-            temp_single_object_dfs[obj][obj + '_' + 'cluster'] = (object_gmm.predict(test_single_object_dfs[obj]))
+            except ValueError:
+                nan_df = obj_df[obj_df.isnull().any(axis=1)]
+                nan_df[obj + '_' + 'sim_scores'] = np.nan
+                nan_df[obj + '_' + 'cluster'] = np.nan
+
+                rem_df = obj_df.dropna(axis=0)
+                temp_df = copy.deepcopy(rem_df)
+                rem_df[obj + '_' + 'sim_scores'] = object_gmm.score_samples(temp_df)
+                rem_df[obj + '_' + 'cluster'] = object_gmm.predict(temp_df)
+
+                comb_df = pd.concat([nan_df, rem_df])
+                comb_df.sort_index(inplace=True)
+
+                temp_single_object_dfs[obj][obj + '_' + 'sim_scores'] = comb_df[obj + '_' + 'sim_scores']
+                temp_single_object_dfs[obj][obj + '_' + 'cluster'] = comb_df[obj + '_' + 'cluster']
 
         return temp_single_object_dfs
 
@@ -131,13 +146,27 @@ class SimScoreComputer:
         for object_pair in self.object_pair_frequencies:
             object_pair_frequency = self.object_pair_frequencies[object_pair]
             object_pair_gmm = self.object_pair_gmms[object_pair]['gmm']
+            object_pair_df = test_object_pair_dfs[object_pair]
 
-            temp_object_pair_dfs[object_pair][object_pair + '_' + 'sim_scores'] = \
-                                                               (object_pair_frequency *
-                                                               object_pair_gmm.score_samples(test_object_pair_dfs[object_pair])
-                                                               / self.number_of_training_scenes)
+            try:
+                temp_object_pair_dfs[object_pair][object_pair + '_' + 'sim_scores'] = object_pair_gmm.score_samples(object_pair_df)
+                temp_object_pair_dfs[object_pair][object_pair + '_' + 'cluster'] = object_pair_gmm.predict(object_pair_df)
 
-            temp_object_pair_dfs[object_pair][object_pair + '_' + 'cluster'] = object_pair_gmm.predict(test_object_pair_dfs[object_pair])
+            except ValueError:
+                nan_df = object_pair_df[object_pair_df.isnull().any(axis=1)]
+                nan_df[object_pair + '_' + 'sim_scores'] = np.nan
+                nan_df[object_pair + '_' + 'cluster'] = np.nan
+
+                rem_df = object_pair_df.dropna(axis=0)
+                temp_df = copy.deepcopy(rem_df)
+                rem_df[object_pair + '_' + 'sim_scores'] = object_pair_gmm.score_samples(temp_df)
+                rem_df[object_pair + '_' + 'cluster'] = object_pair_gmm.predict(temp_df)
+
+                comb_df = pd.concat([nan_df, rem_df])
+                comb_df.sort_index(inplace=True)
+
+                temp_object_pair_dfs[object_pair][object_pair + '_' + 'sim_scores'] = comb_df[object_pair + '_' + 'sim_scores']
+                temp_object_pair_dfs[object_pair][object_pair + '_' + 'cluster'] = comb_df[object_pair + '_' + 'cluster']
 
         return temp_object_pair_dfs
 
@@ -198,6 +227,7 @@ class SimScoreComputer:
 
         overall_results['sim_scores'] = overall_sim_scores
 
+        # import ipdb; ipdb.set_trace()
         anomalous = 0
         results_table = pd.DataFrame(index=overall_results.index)
 
@@ -222,7 +252,13 @@ class SimScoreComputer:
 
             for obj in test_single_object_dfs:
                 # component = 'component_' + str(int(row[obj + '_' + 'cluster']))
-                component = int(row[obj + '_' + 'cluster'])
+                # print(obj)
+                # print(row)
+                try:
+                    component = int(row[obj + '_' + 'cluster'])
+                except ValueError:
+                    print("This object is not present on this table - {}".format(obj))
+                    continue
                 if row[obj + '_' + 'sim_scores'] < single_object_thresholds[obj][component]:
                     anomalous = 1
                     results_table.loc[index, obj] = 1
@@ -233,7 +269,10 @@ class SimScoreComputer:
 
             for object_pair in test_object_pair_dfs:
                 # component = 'component_' + str(int(row[object_pair + '_' + 'cluster']))
-                component = int(row[object_pair + '_' + 'cluster'])
+                try:
+                    component = int(row[object_pair + '_' + 'cluster'])
+                except ValueError:
+                    continue
                 if row[object_pair + '_' + 'sim_scores'] < object_pair_thresholds[object_pair][component]:
                     anomalous = 1
                     results_table.loc[index, object_pair] = 1
